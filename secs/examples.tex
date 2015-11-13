@@ -1,0 +1,33 @@
+A core part of the functional programming experience is writing higher order functions. Many users write higher order functions first, then combine them in interesting and useful ways. Library authors often provide users with many higher order functions to allow users more easily write their applications. With this in mind, we hope to provide a synthesis engine that is able to leverage user defined higher order functions. 
+
+Since users write higher order functions with a deep understanding of the domain, using them will produce code that is more idiomatic and easier to understand then using generic higher order functions. Additionally, fewer examples are needed because we have access to the domain specific knowledge encoded by the user library.
+
+\begin{minted}[fontsize=\footnotesize]{haskell}
+--User has their own library of fxns
+map2 :: (a -> b) -> [a] -> [b]
+map2 f (x:xs) = f x : f x : map2 f xs
+
+mapR :: (a -> a) -> [a] -> [a]
+mapR f (x:xs) = mapR f xs ++ [f x]
+
+--and wants to use it synthesize
+exs :: [[Bool] ~> [Bool]]
+exs = [[1, 2, 3] ~> [1, 1, 2, 2, 3, 3]]
+\end{minted}
+
+
+If a user is importing a library, they can also synthesize programs that use those function. As an example, we show code to reverse a music value from the Euterpea DSL for music in haskell.
+
+\begin{minted}[fontsize=\footnotesize]{haskell}
+import Euterpea
+
+third :: Pitch -> Pitch
+third = trans 3
+
+exs :: [Music Pitch ~> Music Pitch]
+exs = [ (c 4 qn  :+: d 4 qn) ~>
+        (ef 4 qn :+: f 4 qn) ]
+        
+-- will use mMap (musicMap) and third
+prog = mMap third
+\end{minted}

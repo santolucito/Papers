@@ -1,0 +1,10 @@
+First we build the synthesis engine by assigning refinement types to every higher order function in the user's library.
+The list of refinement types is sorted by closeness to the user - user's functions first, explicit imports second, and standard library last.
+
+With the engine built, we enter the synthesis stage when the user is ready to process some examples. 
+We assign a refinement type to the examples and match that refinement type to the higher order functions.
+The ranking of the higher order functions is adjusted based on how close the refinement types match, if at all.
+
+Once candidate higher order functions have been chosen, we proceed to chose the first order, or component, function that fits the type the candidate higher order function.
+With a set of possible programs (where a program is combination of higher order and first order functions), we apply programs to examples until we find one that satisfies all the examples.
+Because we have kept a rank of best choices, the first correct one is also likely the most stylistic.

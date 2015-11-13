@@ -1,0 +1,53 @@
+\section{Introduction}
+We enable programming by example that leverages user defined higher order functions.
+There are two steps, preprocessing and user-level synthesis, which could be compared to compile time and runtime for the PBE engine.
+
+In the runtime process, we will choose an appropriate candidate higher order function.
+With that higher order function, we will need to synthesize its component function.
+We then recursively apply out PBE engine.
+This exactly the $\Lambda^2$ algorithm I think.
+
+In the preprocessing step we synthesize refinement types for the user defined higher order functions to be used for determining which functions to apply to a given example set.
+In order to synthesize the component functions at runtime, we will synthesize a subexample generation function in preprocessing.
+We need to generate subexamples to be able to recursively apply the PBE engine.
+In a fascinating and twisted recursion, the subexample generation function is also synthesized using the PBE engine. 
+
+After the preprocessing step, from which we have obtained refinement types and subexample generation functions, we then move to the actual user-level synthesis.
+We will generate refinement types for the given examples then use type checking to choose a good higher order function to explore.
+
+\section{Preprocessing}
+In preprocessing, we are generating hypotheses for all user defined higher order functions.
+The hypotheses say something about the semantic meaning of hoe the function works.
+We have refinement types which act as statements about the applicability of the function to example sets.
+We have subexample generation functions for each higher order function that are statements about how the component function will behave.
+
+\subsection{Refinement type generation}
+Pull from a pool of template refinement types that fit the typeclass constraints. 
+If we wanted to synthesize these, we probably could (though I'm not sure how or if it is useful at all).
+
+\subsection{Subexample generation}
+After choosing a higher order function to explore as a candidate for the user provided examples, will will need to also synthesize the component function.
+For example if we have \textbf{map f list}, we need to also synthesize \textbf{f}.
+We will rely on recursively calling our PBE engine on \textbf{f}, which means we need to have examples for \textbf{f}.
+These examples can be extracted from the top level user provided examples, but that requires a subexample generation function for every higher order function.
+
+We can generate as many examples for a higher order function as we want (using quickcheck's co/arbitrary classes).
+We will also wrap the component function in a state monad that allows us to record its execution on all of the examples.
+
+As an example, consider \textbf{map}.
+Given the type of \textbf{map :: (a -> b) -> [a] -> [b]}, the subexample generation function will have type \textbf{:: [a] -> [b] -> [(a,b)]}.
+We might generate the example input \textbf{(+1) [1,2,3]}.
+We wrap the function \textbf{(+1)} in a monad so that everytime it is executed, we keep a record of its inputs and outputs, so we know that the component function mapped \textbf{[(1,2),(2,3),(3,4)]} to give an output from map of \textbf{[2,3,4]}.
+
+Well now we have generated an example for the subexample generation function \textbf{example\_input = ([1,2,3],[2,3,4] ; example\_output = [(1,2),(2,3),(3,4)]}.
+So, what if we try to run PBE on this? 
+Interestingly, this is a slightly easier synthesis problem (than user-level synth) since we have the ability to generate as many examples as we want. 
+There is also not as much of a time constraint since this is a preprocessing step, or "compile time cost", before the user starts actually running synthesis themselves. 
+The other crazy thing is that we can apply the \textit{incompletely built} PBE engine recursively here, until we reach a synthesis problem that is easy to solve, then propagate that solution back up to the top level.
+
+\section{User-level Synthesis}
+We synthesizing the refinement types for examples we need to be careful to not generate the strongest possible refineent type.
+Since example are inherently an underspecification, this can lead to problems.
+As an example consider \textbf{filter}, for which all the examples a user provide may actually filter an element.
+The strongest refinement type for this would  \textbf{xs:[a] -> {v:[a] | (len v) < (len xs)}} , while the refinement type for filter is correctly \textbf{filter :: (a -> Bool) -> xs:[a] -> {v:[a] | (len v) <= (len xs)}}.
+We may need to deal with subtyping, but if we choose a limited and sensible pool of template refinement types to start with, we might be able to avoid that whole can of worms.  
