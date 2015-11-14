@@ -1,10 +1,14 @@
-First we build the synthesis engine by assigning refinement types to every higher order function in the user's library.
-The list of refinement types is sorted by closeness to the user - user's functions first, explicit imports second, and standard library last.
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.45\textwidth]{algo}
+  \caption{High-level structure of the algorithm.}
+  \label{fig:high_level_overview}
+\end{figure}
 
-With the engine built, we enter the synthesis stage when the user is ready to process some examples. 
-We assign a refinement type to the examples and match that refinement type to the higher order functions.
-The ranking of the higher order functions is adjusted based on how close the refinement types match, if at all.
+In this section, we give a high-level description of each component of our algorithm. Figure~\ref{fig:high_level_overview} below illustrates the ways in which these components interact. Broadly speaking, there are two main stages in the algorithm. The offline phase gathers the higher order declarations visible in the APIs and user-provided code, and assigns refinement types to them to build a custom synthesis \textit{engine}. This engine is then used during the online phase of the algorithm to search for functions that fit a set of supplied examples.
 
-Once candidate higher order functions have been chosen, we proceed to chose the first order, or component, function that fits the type the candidate higher order function.
-With a set of possible programs (where a program is combination of higher order and first order functions), we apply programs to examples until we find one that satisfies all the examples.
-Because we have kept a rank of best choices, the first correct one is also likely the most stylistic.
+During the offline phase, the algorithm first scans the user-provided code, the libraries it imports, and the standard library to gather all of the functions and global values visible to the program. Then, it selects the higher-order functions from the set of all functions and values, and uses Liquid Haskell \cite{liquidhaskell} to assign refinement types to each one. Finally, each higher-order function is assigned a weight based on locality. User-defined functions are given the highest priority, while direct imports are given less, and the standard libraries are given the least. Together with the first-order functions and values, these triples of higher-order functions with their refinement types and weights are collected to produce a synthesis engine.
+
+Once this stage is complete, the user can make online queries to the synthesis engine, which will search the space of constructable functions for those that fit the input examples. First, the engine computes a refinement type that fits the examples. This type is matched against the refinement types of the known higher-order functions, and the weights of each known function are adjusted based on how close the types match, if at all.
+
+Once the candidate higher order functions have been chosen, the synthesis engine performs a best-first search for a program that fits all of the input and output examples by composing the candidates with first-order functions. For example, the higher-order function \texttt{map} might be supplied the \texttt{length} function if the example inputs are lists of lists of integers and the output examples are all lists of integers. The programs that are examined during the search are evaluated against the example set and are reported to the user as they match. Because the weights favor local declarations, the highest-ranked programs are likely to be the most idiomatic.

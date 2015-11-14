@@ -1,6 +1,5 @@
-
 \subsection{Refinement type inference}
-We first compile \textbf{map2} and \textbf{mapR} into the synthesis engine, which will later be used to find an implementation of \textbf{exs}.
+We first compile \texttt{map2} and \texttt{mapR} into the synthesis engine, which will later be used to find an implementation of \textbf{exs}.
 Compiling the higher order functions into the synthesis engine is the equivalent of generating hypotheses about the higher order function in $\Lambda^2$.
 We separate these hypotheses into two classes - \textit{search space reducers} and \textit{subexample generators}.
 The search space reducers take the form of refinement types, while the subexample generators are functions.

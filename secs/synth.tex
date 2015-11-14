@@ -1,17 +1,12 @@
+Once the synthesis engine has been constructed, the system is ready to answer function fitting queries.
 
-The compilation of the synthesis engine is complete once the refinement types and subexample generation functions have been generated.
-We may use this engine for the runtime synthesis of the user.
-After the user provides the examples, the engine must choose a possible higher order function that fits those examples.
-To do this, we also synthesize refinement types for the given examples.
-Then, using the builtin type-checking, we easily determine that the appropriate higher order function is \textbf{filter}.
+The compilation of the synthesis engine is complete once the refinement types and subexample generation functions have been generated. We may use this engine for the runtime synthesis of the user. After the user provides the examples, the engine must choose a possible higher order function that fits those examples. To do this, we also synthesize refinement types for the given examples. Then, using the builtin type-checking, we easily determine that the appropriate higher order function is \textbf{filter}.
 
 \begin{minted}{haskell}
 exs :: [xs:[a] ~> {ys:[a] | len xs >= len ys}]
 \end{minted}
 
-The component function of filter, the predicate \textbf{p}, will be synthesized with programming by example, but we must first provide examples. 
-Applying the subexample generator to the user provided examples yields a list of examples for each top-level example.
-Once the examples map primitives to primitives, we can do exhaustive search, or call an SMT solver probably.
+The component function of filter, the predicate \textbf{p}, will be synthesized with programming by example, but we must first provide examples. Applying the subexample generator to the user provided examples yields a list of examples for each top-level example. Once the examples map primitives to primitives, we can do exhaustive search, or call an SMT solver probably.
 
 \begin{minted}{haskell}
 subExs = filterGen exs
