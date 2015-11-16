@@ -12,7 +12,7 @@ map2 f (x:xs) = f x : f x : map2 f xs
 mapR :: (a -> a) -> [a] -> [a]
 mapR f (x:xs) = mapR f xs ++ [f x]
 
---and wants to lstlistinguse it synthesize
+--and wants to synthesize stutter
 exs :: [[Int] :-> [Int]]
 exs = [[1, 2, 3] :-> [1, 1, 2, 2, 3, 3]]
 

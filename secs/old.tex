@@ -98,3 +98,18 @@ subExs = filterGen exs
    , 3 ~> True,  4 ~> True,  5 ~> True
    , 4 ~> True,  3 ~> True,  2 ~> False] -}
 \end{minted}
+
+
+As an example of what happens...
+\begin{lstlisting}[language=haskell]
+map :: (a -> b) -> [a] -> [a]
+exs :: [Int] :-> [Int]
+
+--component function must generalize
+f :: Int -> Int
+
+goodFxn1 :: Int  -> Int
+goodFxn2 :: Int  -> a
+goodFxn3 :: a    -> a
+badFxn   :: Bool -> Bool
+\end{lstlisting}

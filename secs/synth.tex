@@ -14,32 +14,35 @@ exs = [[1,2,3,4] :-> [1,3],
 
 Once these higher order functions have been culled from the pool of candidates, we iterate through each in best-first order. For each higher-order function, we supply it with arguments until it is compatible with the type signature implied by the example set. By convention, we take the final argument of the function to be the input, which means that higher-order functions that take multiple inputs have to explicitly be uncurried. Value types are satisfied by selecting from a pool of default values, and function types are satisfied by searching for first-order functions that would make the resulting signatures match. If it is not possible to find values that fit, the search moves on to the next higher-order function.
 
-\subsection{Dismantling procedures}
+\subsubsection{Dismantling procedures}
 
 A \textit{dismantling procedure} prunes the first order function search space.
 Subexample generation from that other paper\cite{isil} is one example of a (powerful) dismantling procedure. Subexample generation also gives the ability to recursively call the synthesis engine to generate programs with multiple applications of a high order function.
 Because subexample generation is hard, and we dont know how to do it yet, we present a different idea.
 Our dismantling procedure will deduce a specialized component signature given a higher order signature and the examples signature.
 
-To choose the component function we use a sound, but not complete subtyping.
-When two types have this relations, we will say type a \textit{generalizes} type b.
+To choose the component function we weighted subtyping algorithm.
+When two types have weight of >1, we will say type a \textit{generalizes} type b.
 \markk{someone probably wrote something about this, just need to find out where and cite.}
 If we have the higher order function map :: (a$\to$b) $\to$ [a] $\to$ [b] and the examples :: [Int] $\to$ [Int], then our component function f might have f::a$\to$b, or f::Int$\to$Int, or f::Int$\to$a, but certainly not f::[Bool]$\to$[Bool].
 
+The cost relation can be formalized as follows in the pseudocode for the cost function function c.
 \begin{lstlisting}[language=haskell]
-map :: (a -> b) -> [a] -> [a]
-exs :: [Int] :-> [Int]
 
---component function must generalize
-f :: Int -> Int
+c :: Type -> Type -> Maybe Int
+c (TyParen t1) (TyParen t2) =
+  fmap (1+) $ c t1 t2
+c (TyFun t1 t1') (TyFun t2 t2') =
+   fmap (1+) (liftA2 (+) (c t1 t2) (c t1' t2'))
+c (TyCon q1) (TyCon q2) =
+   if (q1==q2) then Just 20 else Nothing
+c _ _ = Nothing
 
-goodFxn1 :: Int  -> Int
-goodFxn2 :: Int  -> a
-goodFxn3 :: a    -> a
-badFxn   :: Bool -> Bool
 \end{lstlisting}
 
-\subsection{Handling folds}
+
+
+\subsubsection{Handling folds}
 We identify two separate classes of higher order functions - those that take a single first order function, and those that need initial values in addition to a function. The \texttt{map} function only takes a first order function, while \texttt{foldl :: $(a\to b\to a)\to a\to [b]\to a$} requires an initial value for \texttt{a}. While the process described so far handles the former, initial values must also be addressed.
 
 To identify initial values in a type signature, we can use our previous assumption that all hihgher order function have been partially curried to the type \texttt{$\_\to *\to*$}. Adding the further assumption that only one first order function maybe be passed to the higher order function, we simply tag any non-function type in the hole as an initial value. 
@@ -57,7 +60,7 @@ foldl5 f i o = foldl f 5 i o
 \end{lstlisting}
 
 
-\subsection{Soundness and Completeness}
+\subsubsection{Soundness and Completeness}\label{sound}
 \markk{for completness, can we show that we are complete within a specific domain? Also see \ref{extLiqHask} for more on completness.}
 
 From the procedure outlined above, it is clear that no function will be returned by the algorithm that does not fit the examples given, since functions are validated before being reported. Still, it is possible for the synthesis procedure to return a function that does not capture the user's intent. Generally, this can be solved by supplying more examples to narrow the set of possible fitting functions.

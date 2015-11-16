@@ -1,4 +1,4 @@
-\subsection{Refinement type inference}
+\subsubsection{Refinement type inference}
 
 %>  filter ishigherOrder tys
 We first collect all of the type signatures from our sources (user code, imports, and standard library). We filter through these to select only the higher order functions. Because in Haskell the function type constructor (->) is right binding, any higher order functions must have parenthesis in the type signature, which provides a convenient filtering predicate.
@@ -37,7 +37,7 @@ Although this offline stage only needs to be run once given a set of code and im
 
 
 
-\subsection{User defined data types}
+\subsubsection{User defined data types}
 %We focus only higher order functions that manipulate data structures
 In order to support user defined data structures, we only require that a user implements some kind of measure\cite{realWorldLiquid} over their data structure.
 This size function will help the system determine size constraints on the examples, so that we can pick higher order functions that might actually work.
@@ -62,7 +62,7 @@ len m =
 \end{lstlisting}
 
 
-\subsection{Extending Liquid Haskell}\label{extLiqHask}
+\subsubsection{Extending Liquid Haskell}\label{extLiqHask}
 \markk{MARVIN - write something that makes more sense here}
 LiquidHaskell does not support certain popular syntax extensions to Haskell, such as LambdaCase (TODO list others). In the spirit of this work, we wish to support as much user defined code as possible. To this end, we can extend the refinement type system by allowing refinement type inference on repersentative examples of a higher order function. Take the following code \markk{find something from an actual library on hackage.}
 
