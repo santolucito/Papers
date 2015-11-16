@@ -9,9 +9,6 @@ Since users write higher order functions with a deep understanding of the domain
 map2 :: (a -> b) -> [a] -> [b]
 map2 f (x:xs) = f x : f x : map2 f xs
 
-mapR :: (a -> a) -> [a] -> [a]
-mapR f (x:xs) = mapR f xs ++ [f x]
-
 --and wants to synthesize stutter
 exs :: [[Int] :-> [Int]]
 exs = [[1, 2, 3] :-> [1, 1, 2, 2, 3, 3]]
