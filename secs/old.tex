@@ -51,3 +51,50 @@ Since example are inherently an underspecification, this can lead to problems.
 As an example consider \textbf{filter}, for which all the examples a user provide may actually filter an element.
 The strongest refinement type for this would  \textbf{xs:[a] -> {v:[a] | (len v) < (len xs)}} , while the refinement type for filter is correctly \textbf{filter :: (a -> Bool) -> xs:[a] -> {v:[a] | (len v) <= (len xs)}}.
 We may need to deal with subtyping, but if we choose a limited and sensible pool of template refinement types to start with, we might be able to avoid that whole can of worms.  
+
+\section{subexample Generation}
+\begin{minted}{haskell}
+testInputs = [( (>20), [10,20,30]
+              , even, [6,7,8]
+              , True, ['a','b','c'])]
+filterExs = map filter testInputs
+filter  :: (a -> Bool)
+        -> xs:[a]
+        -> {ys:[a] | len xs >= len ys}
+map2    :: (a -> b)
+        -> xs:[a]
+        -> {ys:[a] | len xs < len ys}
+\end{minted}
+
+The subexample generation functions are synthesized from examples collected by wrapping the component function in a state monad to collect a record of its executions.
+We now have a set of examples for top-level input, top-level output, and subexample.
+We can recursively call PBE... This isn't the right way I think.
+
+
+\begin{minted}{haskell}
+p' p x = write x >> write (p x) >> return (p x)
+filterSubs = map (filter p') testInputs
+{- ([10,20,30] ~> [30] ~> [10 ~> False, 20 ~> False, 30 ~> True]
+   ,[6,7,8] ~> [6,8] ~> [6 ~> True, 7 ~> False, 8 ~> True]
+   ,['a','b'] ~> ['a','b'] ~> ['a' ~> True, 'b' ~> True] -}
+   
+filterGen :: [[a] ~> [a]] -> [(a ~> Bool)]
+filterGen = synthesize filterSubs
+mapGen :: [[a] ~> [b]] -> [(a ~> b)]
+\end{minted}
+
+
+The compilation of the synthesis engine is complete once the refinement types and subexample generation functions have been generated. We may use this engine for the runtime synthesis of the user. After the user provides the examples, the engine must choose a possible higher order function that fits those examples. To do this, we also synthesize refinement types for the given examples. Then, using the builtin type-checking, we easily determine that the appropriate higher order function is \textbf{filter}.
+
+\begin{minted}{haskell}
+exs :: [xs:[a] ~> {ys:[a] | len xs >= len ys}]
+\end{minted}
+
+The component function of filter, the predicate \textbf{p}, will be synthesized with programming by example, but we must first provide examples. Applying the subexample generator to the user provided examples yields a list of examples for each top-level example. Once the examples map primitives to primitives, we can do exhaustive search, or call an SMT solver probably.
+
+\begin{minted}{haskell}
+subExs = filterGen exs
+{- [ 1 ~> False, 2 ~> False, 3 ~> True
+   , 3 ~> True,  4 ~> True,  5 ~> True
+   , 4 ~> True,  3 ~> True,  2 ~> False] -}
+\end{minted}

@@ -13,12 +13,14 @@ mapR :: (a -> a) -> [a] -> [a]
 mapR f (x:xs) = mapR f xs ++ [f x]
 
 --and wants to use it synthesize
-exs :: [[Bool] ~> [Bool]]
-exs = [[1, 2, 3] ~> [1, 1, 2, 2, 3, 3]]
+exs :: [[Int] :-> [Int]]
+exs = [[1, 2, 3] :-> [1, 1, 2, 2, 3, 3]]
+
+-- We find the progam = map2 id
 \end{minted}
 
 
-If a user is importing a library, they can also synthesize programs that use those function. As an example, we show code to reverse a music value from the Euterpea DSL for music in haskell.
+If a user is importing a library, they can also synthesize programs that use those function. As an example, we show code to transpose a music value from the Euterpea DSL for music in haskell.
 
 \begin{minted}[fontsize=\footnotesize]{haskell}
 import Euterpea
@@ -26,8 +28,8 @@ import Euterpea
 third :: Pitch -> Pitch
 third = trans 3
 
-exs :: [Music Pitch ~> Music Pitch]
-exs = [ (c 4 qn  :+: d 4 qn) ~>
+exs :: [Music Pitch :-> Music Pitch]
+exs = [ (c 4 qn  :+: d 4 qn) :->
         (ef 4 qn :+: f 4 qn) ]
         
 -- will use mMap (musicMap) and third

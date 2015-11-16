@@ -1,17 +1,42 @@
-Once the synthesis engine has been constructed, the system is ready to answer function fitting queries.
+Once the synthesis engine has been constructed, the system is ready to answer function fitting queries. When examples are provided, the synthesis engine finds a suitable refinement type for a hypothetical function that could fit that example. Then, this refinement type is matched via builtin type-checking against the higher order functions known to the engine.
 
-The compilation of the synthesis engine is complete once the refinement types and subexample generation functions have been generated. We may use this engine for the runtime synthesis of the user. After the user provides the examples, the engine must choose a possible higher order function that fits those examples. To do this, we also synthesize refinement types for the given examples. Then, using the builtin type-checking, we easily determine that the appropriate higher order function is \textbf{filter}.
+Once the candidate functions are identified, a best-first search is initiated over combinations of the higher-order functions curried with each component function so that the combination type-checks. Each of these is executed against the set of inputs. Whenever a function produces the correct outputs for each input, it is said to fit, and is reported to the user. This search continues until the space is exhausted or it is manually interrupted.
 
+To find the refinement types, we run type inference on the input / output examples to get a basic refinement type. Then, the input-output pairs are matched against a fixed set of predicates to enrich the refinement type. These predicates could impose constraints such as the input list being of equal, lesser, or greater size to the output list. For instance, the example set:
 \begin{minted}{haskell}
-exs :: [xs:[a] ~> {ys:[a] | len xs >= len ys}]
+exs = [[1,2,3,4] :-> [1,3],
+       [2,4,6,8] :-> [],
+       [5,7] :-> [5,7]]
+\end{minted}
+\noindent would have an inferred base type of \texttt{[Int] -> [Int]} and its final refinement type would be \texttt{xs:[Int] -> \{ ys:[Int] | len xs >= len ys \}}, since all of the examples suggest that the output list does not grow. The addition of these refinement type predicates dramatically reduces the search space in practice.
+
+Once these higher order functions have been culled from the pool of candidates, we iterate through each in best-first order. For each higher-order function, we supply it with arguments until it is compatible with the type signature implied by the example set. By convention, we take the final argument of the function to be the input, which means that higher-order functions that take multiple inputs have to explicitly be uncurried. Value types are satisfied by selecting from a pool of default values, and function types are satisfied by searching for first-order functions that would make the resulting signatures match. If it is not possible to find values that fit, the search moves on to the next higher-order function.
+
+\subsection{Dismantling procedures}
+To choose the component function we use a sound, but not complete subtyping.
+When two types have this relations, we will say type a \textit{generalizes} type b.
+someone probably wrote something about this, just need to find out where and cite.
+If we have the higher order function map :: (a$\to$b) $\to$ [a] $\to$ [b] and the examples :: [Int] $\to$ [Int], then our component function f might have f::a$\to$b, or f::Int$\to$Int, or f::Int$\to$a, but certainly not f::[Bool]$\to$[Bool].
+
+A \textit{dismantling procedure} prunes the first order function search space.
+Subexample generation from that other paper\cite{isil} is one example of a dismantling procedure.
+Because subexample generation is hard, and we want to get two papers out of this, we present a different idea.
+Our dismantling procedure will deduce a specialized component signature given a higher order signature and the examples signature.
+
+\begin{minted}[fontsize=\footnotesize]{haskell}
+map :: (a -> b) -> [a] -> [a]
+exs :: [Int] :-> [Int]
+
+--component function must generalize
+f :: Int -> Int
+
+fGood :: Int->Int, Int->a, a->a
+fBad :: Bool -> Bool
 \end{minted}
 
-The component function of filter, the predicate \textbf{p}, will be synthesized with programming by example, but we must first provide examples. Applying the subexample generator to the user provided examples yields a list of examples for each top-level example. Once the examples map primitives to primitives, we can do exhaustive search, or call an SMT solver probably.
+\subsection{Soundness and Completeness}
+From the procedure outlined above, it is clear that no function will be returned by the algorithm that does not fit the examples given, since functions are validated before being reported. Still, it is possible for the synthesis procedure to return a function that does not capture the user's intent. Generally, this can be solved by supplying more examples to narrow the set of possible fitting functions.
 
-\begin{minted}{haskell}
-subExs = filterGen exs
-{- [ 1 ~> False, 2 ~> False, 3 ~> True
-   , 3 ~> True,  4 ~> True,  5 ~> True
-   , 4 ~> True,  3 ~> True,  2 ~> False] -}
-\end{minted}
+However, depending on what the user is trying to synthesize, and which examples have been provided, it is possible for new examples to increase the search space. If, for example, a user gives only positive examples for a \texttt{filter}, the refinement type predicate discovery will assume that the lists do not change size, and will likely return \texttt{map id} as a result.
 
+On the other hand, the set of functions that the algorithm can produce is fairly broad. It is able to search through the entire space of higher order functions that have been specialized with a first-order function, when considering the functions that are in scope. We will see in section~\ref{sec:evaluation} how broad this space actually is.
