@@ -4,7 +4,7 @@ A core part of the functional programming experience is writing higher order fun
 
 Since users write higher order functions with a deep understanding of the domain, using them will produce code that is more idiomatic and easier to understand then using generic higher order functions. Additionally, fewer examples are needed because we have access to the domain specific knowledge encoded by the user library.
 
-\begin{minted}[fontsize=\footnotesize]{haskell}
+\begin{lstlisting}[language=haskell]
 --User has their own library of fxns
 map2 :: (a -> b) -> [a] -> [b]
 map2 f (x:xs) = f x : f x : map2 f xs
@@ -12,17 +12,17 @@ map2 f (x:xs) = f x : f x : map2 f xs
 mapR :: (a -> a) -> [a] -> [a]
 mapR f (x:xs) = mapR f xs ++ [f x]
 
---and wants to use it synthesize
+--and wants to lstlistinguse it synthesize
 exs :: [[Int] :-> [Int]]
 exs = [[1, 2, 3] :-> [1, 1, 2, 2, 3, 3]]
 
 -- We find the progam = map2 id
-\end{minted}
+\end{lstlisting}
 
 
 If a user is importing a library, they can also synthesize programs that use those function. As an example, we show code to transpose a music value from the Euterpea DSL for music in haskell.
 
-\begin{minted}[fontsize=\footnotesize]{haskell}
+\begin{lstlisting}[language=haskell]
 import Euterpea
 
 third :: Pitch -> Pitch
@@ -34,4 +34,4 @@ exs = [ (c 4 qn  :+: d 4 qn) :->
         
 -- will use mMap (musicMap) and third
 prog = mMap third
-\end{minted}
+\end{lstlisting}
