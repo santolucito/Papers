@@ -16,10 +16,15 @@ In the case that the input and output types of the higher order functions are th
 In this case, the hypothesis that applies to the higher order functions must also apply to the examples in order to consider that function as a candidate.
 In the case that the input and output type are different, we defer the analysis to the synthesis stage and use our ranking system to good effect.
 
-In order to derive these hypotheses, we require all higher order functions be be of a unified Kind (?) \texttt{$\_ \to * \to *$}, where the penultimate kind of the signature is the input and the final kind is the the output. functionally, this means we require that the user partially uncurry any higher order function they are interested in using during synthesis.
+In order to derive these hypotheses, we require all higher order functions be be of a unified signature \texttt{$\_ \to * \to *$}, where the penultimate kind of the signature is the input and the final kind is the the output. \markk{Put in a note about data kinds here.} Functionally, this means we require that the user partially uncurry any higher order function they are interested in using during synthesis.
 
 This is a simple procedure, but requires user knowledge of which parameters to the function will be given by the examples. 
-As an example consider \texttt{zipWith' f (xs,ys) = zipWith f xs ys}, which will yield the type \texttt{zipWith' :: (a$\to$ b $\to$ c) $\to$ ([a],[b]) $\to$ [c]}. 
+As an example consider 
+
+\begin{minted}[fontsize=\footnotesize]{haskell}
+zipWith' :: (a -> b -> c) -> ([a],[b]) -> [c]
+zipWith' f (xs,ys) = zipWith f xs ys
+\end{minted}
 %The liquidHaskell predicate applied to this signature will be of the effect of \texttt{len([a],[b]) = len([c])}.
 
 
@@ -37,7 +42,7 @@ Although this offline stage only needs to be run once given a set of code and im
 In order to support user defined data structures, we only require that a user implements some kind of measure\cite{realWorldLiquid} over their data structure.
 This size function will help the system determine size constraints on the examples, so that we can pick higher order functions that might actually work.
 In fact, a size function could just be a constant function, which means the system will test every higher-order function that fits the types. 
-Maybe this should even be a builtin default?
+\markk{Maybe this should even be a builtin default? If liquid haskell says no def for len, just set the type to true - thats an easy hack}
 
 As an example, take the code from section \ref{examples} for synthesizing a music function.
 the user would have needed to provide a measure function for Music a.
@@ -57,23 +62,20 @@ len m =
 \end{minted}
 
 
-\subsection{Extending Liquid Haskell
-}%this hasn't happened yet (and probably wont for this paper)
-LiquidHaskell does not support certain popular syntax extensions to Haskell, such as LambdaCase (TODO list others). In the spirit of this work, we wish to support as much user defined code as possible. To this end, we can extend the refinement type system by allowing refinement type inference on repersentative examples of a higher order function. Take the following code (pick something from an actual library on hackage.
+\subsection{Extending Liquid Haskell}\label{extLiqHask}
+\markk{MARVIN - write something that makes more sense here}
+LiquidHaskell does not support certain popular syntax extensions to Haskell, such as LambdaCase (TODO list others). In the spirit of this work, we wish to support as much user defined code as possible. To this end, we can extend the refinement type system by allowing refinement type inference on repersentative examples of a higher order function. Take the following code \markk{find something from an actual library on hackage.}
 
 \begin{minted}[fontsize=\footnotesize]{haskell}
 {-# LANGAUGE LambdaCase #-}
-
 fooMap :: (a -> b) -> [a] -> [b]
 fooMap f = \case
   [] -> []
   l -> map f l
  \end{minted}
 
-
 We generate and applying many examples with QuickCheck for each higher order function.
 We then apply a similar refinement type inference strategy as above to these examples.
 This lets us support a larger subset of the language, and, in theory refinement type inference for other languages too!
 
-There are however repercussions to this approach. We are not guaranteed to generate a correct refinement type because we might not generate a fully representative examples. So
-\end{comment}
+There are however repercussions to this approach. We are not guaranteed to generate a correct refinement type because we might not generate a fully representative examples. So we might prune away high order functions that are actually useful. 

@@ -2,26 +2,29 @@ Once the synthesis engine has been constructed, the system is ready to answer fu
 
 Once the candidate functions are identified, a best-first search is initiated over combinations of the higher-order functions curried with each component function so that the combination type-checks. Each of these is executed against the set of inputs. Whenever a function produces the correct outputs for each input, it is said to fit, and is reported to the user. This search continues until the space is exhausted or it is manually interrupted.
 
-To find the refinement types, we run type inference on the input / output examples to get a basic refinement type. Then, the input-output pairs are matched against a fixed set of predicates to enrich the refinement type. These predicates could impose constraints such as the input list being of equal, lesser, or greater size to the output list. For instance, the example set:
+As in section \ref{HORtypeInf}, we also consider two cases for examples. The first where the example input and output types match up to the top level type constructor, and the the case where the types do not match.
+
+In the case that the types do match, we find the set of refinement types that the examples satisfy. Generating refinement type predicates about the size of the input and output, as in section \ref{HORTypes}, we run type inference on the input / output examples to \markk{ALEX, the following is wrong, what is a basic rtype anyway?} get a basic refinement type. Then, the input-output pairs are matched against a fixed set of predicates to enrich the refinement type. These predicates could impose constraints such as the input list being of equal, lesser, or greater size to the output list. \markk{end things being junk} For instance, the example set:
 \begin{minted}{haskell}
 exs = [[1,2,3,4] :-> [1,3],
        [2,4,6,8] :-> [],
        [5,7] :-> [5,7]]
 \end{minted}
-\noindent would have an inferred base type of \texttt{[Int] -> [Int]} and its final refinement type would be \texttt{xs:[Int] -> \{ ys:[Int] | len xs >= len ys \}}, since all of the examples suggest that the output list does not grow. The addition of these refinement type predicates dramatically reduces the search space in practice.
+\noindent would have an inferred base type \markk{this isn't inferend right now, if we want to do that we would be using ghc, not LiqHask. check http://stackoverflow.com/questions/8963488/automatically-add-type-signatures-to-top-level-functions for a script to test} of \texttt{[Int] -> [Int]} and its final refinement type would be \texttt{xs:[Int] -> \{ ys:[Int] | len xs >= len ys \}}, since all of the examples suggest that the output list does not grow. The addition of these refinement type predicates dramatically reduces the search space in practice.
 
 Once these higher order functions have been culled from the pool of candidates, we iterate through each in best-first order. For each higher-order function, we supply it with arguments until it is compatible with the type signature implied by the example set. By convention, we take the final argument of the function to be the input, which means that higher-order functions that take multiple inputs have to explicitly be uncurried. Value types are satisfied by selecting from a pool of default values, and function types are satisfied by searching for first-order functions that would make the resulting signatures match. If it is not possible to find values that fit, the search moves on to the next higher-order function.
 
 \subsection{Dismantling procedures}
-To choose the component function we use a sound, but not complete subtyping.
-When two types have this relations, we will say type a \textit{generalizes} type b.
-someone probably wrote something about this, just need to find out where and cite.
-If we have the higher order function map :: (a$\to$b) $\to$ [a] $\to$ [b] and the examples :: [Int] $\to$ [Int], then our component function f might have f::a$\to$b, or f::Int$\to$Int, or f::Int$\to$a, but certainly not f::[Bool]$\to$[Bool].
 
 A \textit{dismantling procedure} prunes the first order function search space.
-Subexample generation from that other paper\cite{isil} is one example of a dismantling procedure.
-Because subexample generation is hard, and we want to get two papers out of this, we present a different idea.
+Subexample generation from that other paper\cite{isil} is one example of a (powerful) dismantling procedure. Subexample generation also gives the ability to recursively call the synthesis engine to generate programs with multiple applications of a high order function.
+Because subexample generation is hard, and we dont know how to do it yet, we present a different idea.
 Our dismantling procedure will deduce a specialized component signature given a higher order signature and the examples signature.
+
+To choose the component function we use a sound, but not complete subtyping.
+When two types have this relations, we will say type a \textit{generalizes} type b.
+\markk{someone probably wrote something about this, just need to find out where and cite.}
+If we have the higher order function map :: (a$\to$b) $\to$ [a] $\to$ [b] and the examples :: [Int] $\to$ [Int], then our component function f might have f::a$\to$b, or f::Int$\to$Int, or f::Int$\to$a, but certainly not f::[Bool]$\to$[Bool].
 
 \begin{minted}[fontsize=\footnotesize]{haskell}
 map :: (a -> b) -> [a] -> [a]
@@ -30,11 +33,33 @@ exs :: [Int] :-> [Int]
 --component function must generalize
 f :: Int -> Int
 
-fGood :: Int->Int, Int->a, a->a
-fBad :: Bool -> Bool
+goodFxn1 :: Int  -> Int
+goodFxn2 :: Int  -> a
+goodFxn3 :: a    -> a
+badFxn   :: Bool -> Bool
 \end{minted}
 
+\subsection{Handling folds}
+We identify two separate classes of higher order functions - those that take a single first order function, and those that need initial values in addition to a function. The \texttt{map} function only takes a first order function, while \texttt{foldl :: $(a\to b\to a)\to a\to [b]\to a$} requires an initial value for \texttt{a}. While the process described so far handles the former, initial values must also be addressed.
+
+To identify initial values in a type signature, we can use our previous assumption that all hihgher order function have been partially curried to the type \texttt{$\_\to *\to*$}. Adding the further assumption that only one first order function maybe be passed to the higher order function, we simply tag any non-function type in the hole as an initial value. 
+
+Since examples must be given as a concrete type, we can always specialize a our candidate higher order function. If the initial type is an instance of Monoid, we can extract the unit value (mempty in the moiod typeclass) to use as our initial value. 
+
+For lists, the unit element is []. However, there are two valid monoids for numbers, using either (+) or (*) as the operators and resulting in unit elements 0 and 1 respectively. We take both of these values as possibilities since the cost is small \markk{compared to all the refinement type stuff we are doing.}
+
+Requiring our users to write monoid instances may be a nuisance. Additionally, users may have some domain knowledge that a particular value may be useful in their applications of folds. If this is the case, users may write specializations of these functions to be used in synthesis. Since our system automatically considers functions defined in the user code base, \markk{finish sentence}.
+
+\begin{minted}[fontsize=\footnotesize]{haskell}
+--to use 5 as an initial value for foldl
+foldl :: (a -> b -> a) -> [b] -> a
+foldl5 f i o = foldl f 5 i o
+\end{minted}
+
+
 \subsection{Soundness and Completeness}
+\markk{for completness, can we show that we are complete within a specific domain? Also see \ref{extLiqHask} for more on completness.}
+
 From the procedure outlined above, it is clear that no function will be returned by the algorithm that does not fit the examples given, since functions are validated before being reported. Still, it is possible for the synthesis procedure to return a function that does not capture the user's intent. Generally, this can be solved by supplying more examples to narrow the set of possible fitting functions.
 
 However, depending on what the user is trying to synthesize, and which examples have been provided, it is possible for new examples to increase the search space. If, for example, a user gives only positive examples for a \texttt{filter}, the refinement type predicate discovery will assume that the lists do not change size, and will likely return \texttt{map id} as a result.

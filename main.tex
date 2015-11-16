@@ -20,6 +20,14 @@
 % known bug: http://tex.stackexchange.com/questions/1522/pdfendlink-ended-up-in-different-nesting-level-than-pdfstartlink
 \newcommand{\doi}[1]{doi:~\href{http://dx.doi.org/#1}{\Hurl{#1}}}   % print a hyperlinked DOI
 
+
+\usepackage[usenames,dvipsnames]{color}
+\newcommand{\ruzica}[1]{\textcolor{Magenta}{\textsf{RP}: #1}}
+\newcommand{\markk}[1]{\textcolor{Blue}{\textsf{MS}: #1}}
+\newcommand{\alex}[1]{\textcolor{Orange}{\textsf{AR}: #1}}
+\newcommand{\marvin}[1]{\textcolor{Green}{\textsf{MQ}: #1}}
+
+
 \usepackage{comment}
 
 
@@ -42,6 +50,8 @@
 \makebox{A University}  \\
 \makebox{A Place, AS 12345}}
 {\{person1,person2\}@cs.auniv.edu}
+
+
 
 \maketitle
 
@@ -69,8 +79,8 @@
 \section{Evaluation}
 \input{secs/eval}
 
-\section{Conclusions}
-
+\section{Related Work and Conclusions}
+\input{secs/conclusion}
 
 \bibliographystyle{abbrvnat}
 \bibliography{sample}
