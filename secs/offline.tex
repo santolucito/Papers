@@ -21,7 +21,7 @@ In order to derive these hypotheses, we require all higher order functions be be
 This is a simple procedure, but requires user knowledge of which parameters to the function will be given by the examples. 
 As an example consider 
 
-\begin{lstlisting}[language=haskell]
+\begin{lstlisting}
 zipWith' :: (a -> b -> c) -> ([a],[b]) -> [c]
 zipWith' f (xs,ys) = zipWith f xs ys
 \end{lstlisting}
@@ -48,7 +48,7 @@ As an example, take the code from section \ref{examples} for synthesizing a musi
 the user would have needed to provide a measure function for Music a.
 This measure will allow liquidHaskell to draw conclusions about the size of examples of type [Music a :$\to$ Music a], as well as conclusions about higher order functions over the Music data structure.
 
-\begin{lstlisting}[language=haskell]
+\begin{lstlisting}
 import Euterpea
 
 {-@ measure len @-}
@@ -66,7 +66,7 @@ len m =
 \markk{MARVIN - write something that makes more sense here}
 LiquidHaskell does not support certain popular syntax extensions to Haskell, such as LambdaCase (TODO list others). In the spirit of this work, we wish to support as much user defined code as possible. To this end, we can extend the refinement type system by allowing refinement type inference on repersentative examples of a higher order function. Take the following code \markk{find something from an actual library on hackage.}
 
-\begin{lstlisting}[language=haskell]
+\begin{lstlisting}
 {-# LANGAUGE LambdaCase #-}
 fooMap :: (a -> b) -> [a] -> [b]
 fooMap f = \case

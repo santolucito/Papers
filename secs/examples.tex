@@ -1,25 +1,39 @@
 A core part of the functional programming experience is writing higher order functions. The functional programming approach encourages specifying general behaviors in the form of abstract, higher-order functions first, and filling in details with first-order functions later.
 
-A core part of the functional programming experience is writing higher order functions. Many users write higher order functions first, then combine them in interesting and useful ways. Library authors often provide users with many higher order functions to allow users more easily write their applications. With this in mind, we hope to provide a synthesis engine that is able to leverage user defined higher order functions.
+A core part of the functional programming experience is writing higher order functions. Many users write higher order functions first, then combine them in interesting and useful ways. Library authors often provide users with many higher order functions to allow users more easily write their applications. With this in mind, we provide a synthesis engine that is able to leverage user defined higher order functions.
 
 Since users write higher order functions with a deep understanding of the domain, using them will produce code that is more idiomatic and easier to understand then using generic higher order functions. Additionally, fewer examples are needed because we have access to the domain specific knowledge encoded by the user library.
 
-\begin{lstlisting}[language=haskell]
+\begin{lstlisting}
 --User has their own library of fxns
-map2 :: (a -> b) -> [a] -> [b]
-map2 f (x:xs) = f x : f x : map2 f xs
+f = replicate 2
 
 --and wants to synthesize stutter
 exs :: [[Int] :-> [Int]]
 exs = [[1, 2, 3] :-> [1, 1, 2, 2, 3, 3]]
 
--- We find the progam = map2 id
+-- We find the program = concatMap f
+-- with extended search turned on
+-- we can also find program = concatMap (replicate 2) 
+\end{lstlisting}
+
+The user can also use this tool to synthesize new, simplier versions of a program. 
+
+\begin{lstlisting}
+--and wants to synthesize stutter
+exs :: [[Int] :-> [Int]]
+exs = [[1, 2, 3] :->
+       foldl (\xs x -> xs++[x,x]) [1,2,3]]
+
+-- We find the program = concatMap f
+-- with extended search turned on
+-- we can also find program = concatMap (replicate 2) 
 \end{lstlisting}
 
 
 If a user is importing a library, they can also synthesize programs that use those function. As an example, we show code to transpose a music value from the Euterpea DSL for music in haskell.
 
-\begin{lstlisting}[language=haskell]
+\begin{lstlisting}
 import Euterpea
 
 third :: Pitch -> Pitch
