@@ -17,10 +17,10 @@ exs = [[1, 2, 3] :-> [1, 1, 2, 2, 3, 3]]
 -- we can also find program = concatMap (replicate 2) 
 \end{lstlisting}
 
-The user can also use this tool to synthesize new, simplier versions of a program. 
+The user can also use this tool to synthesize new, simpler versions of a program. 
 
 \begin{lstlisting}
---and wants to synthesize stutter
+--a simpler, more natural stutter program
 exs :: [[Int] :-> [Int]]
 exs = [[1, 2, 3] :->
        foldl (\xs x -> xs++[x,x]) [1,2,3]]

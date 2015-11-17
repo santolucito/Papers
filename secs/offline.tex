@@ -1,4 +1,4 @@
-\subsubsection{Refinement type inference}
+\subsubsection{Refinement Type Generation}
 
 %>  filter ishigherOrder tys
 We first collect all of the type signatures from our sources (user code, imports, and standard library). We filter through these to select only the higher order functions. Because in Haskell the function type constructor (->) is right binding, any higher order functions must have parenthesis in the type signature, which provides a convenient filtering predicate.
@@ -6,17 +6,21 @@ We first collect all of the type signatures from our sources (user code, imports
 %> let uHOTyps = f 3000 typSigs
 %> let iHOTyps = f 2000 importSigs
 %> let pHOTyps = f 1000 preludeTypSigs
-In order to rank the higher-order functions we assign weights based on their source location. User-defined functions are given the highest priority, while direct imports are given less, and the standard libraries are given the least. These rankings will contribute to the final ranking of candidate functions in the synthesis stage when we match the component function signatures on the examples.
-
+In order to rank the higher-order functions, we assign weights based on their source location. User-defined functions are given the highest priority, while direct imports are given less, and the standard libraries are given the least. These rankings will contribute to the final ranking of candidate functions in the synthesis stage when we match the component function signatures on the examples.
 
 %> hoRTyps <- mapM (addRType fc) (map fst allHOTyps)
 %> HigherOrderFxn -> (injectRFxnType fxn .fst)
-We automatically generate search space pruning hypotheses for our higher order functions.
-In the case that the input and output types of the higher order functions are the same, we generate a LiquidHaskell predicate that relates the size of those types.
-In this case, the hypothesis that applies to the higher order functions must also apply to the examples in order to consider that function as a candidate.
-In the case that the input and output type are different, we defer the analysis to the synthesis stage and use our ranking system to good effect.
+We automatically generate refinement types for our higher order functions that will be used to prune the search space in synthesis.
+In the case that the input and output types of the higher order functions are the same (up to the top level type constructor), we generate a LiquidHaskell predicate that relates the size of those types.
+the size relation that applies to the higher order functions must also apply to the examples in order to consider that function as a candidate.   
 
-In order to derive these hypotheses, we require all higher order functions be be of a unified signature \texttt{$\_ \to * \to *$}, where the penultimate kind of the signature is the input and the final kind is the the output. \markk{Put in a note about data kinds here.} Functionally, this means we require that the user partially uncurry any higher order function they are interested in using during synthesis.
+In the case that the input and output type are different, we note that the size measures between two different type constructors are not guaranteed to have any significance.
+A relation on these values may be useful on occasion, but in practice is often only a confounding factor.
+Since LiquidHaskell is the largest cost to our system, removing refinement type inference in these ambiguous cases provides a large performance gain.
+In processing the Haskell standard library, base:Prelude, we remove \markk{FILL ME IN} cases of refinement type checking.
+Hypothesis generation about these higher order functions is then deferred to the synthesis stage and where we use a subtype ranking system to good effect.
+
+In order to derive these refinement types, we require all higher order functions be be of a unified signature \texttt{$\_ \to * \to *$}, where the penultimate kind of the signature is the input and the final kind is the the output. \markk{Put in a note about data kinds here.} Functionally, this means we require that the user partially uncurry any higher order function they are interested in using during synthesis.
 
 This is a simple procedure, but requires user knowledge of which parameters to the function will be given by the examples. 
 As an example consider 
@@ -32,7 +36,7 @@ zipWith' f (xs,ys) = zipWith f xs ys
 When the input and output types are the same, or use the same top level type constructor, we generate hypotheses as liquidHaskell predicates.
 Our predicates specify size constraints on input and output of $\leq,\geq,=$.
 For every predicate provided, we are able to more accurately prune the search space of higher-order functions, but we must test every higher-order function in scope on these predicates. 
-Therefor, it is best to only select as many refinement types as is needed.
+Therefore, it is best to only select as many refinement types as is needed.
 Although this offline stage only needs to be run once given a set of code and imports, liquidHaskell type checking is still fairly expensive.
 
 
@@ -62,20 +66,4 @@ len m =
 \end{lstlisting}
 
 
-\subsubsection{Extending Liquid Haskell}\label{extLiqHask}
-\markk{MARVIN - write something that makes more sense here}
-LiquidHaskell does not support certain popular syntax extensions to Haskell, such as LambdaCase (TODO list others). In the spirit of this work, we wish to support as much user defined code as possible. To this end, we can extend the refinement type system by allowing refinement type inference on repersentative examples of a higher order function. Take the following code \markk{find something from an actual library on hackage.}
 
-\begin{lstlisting}
-{-# LANGAUGE LambdaCase #-}
-fooMap :: (a -> b) -> [a] -> [b]
-fooMap f = \case
-  [] -> []
-  l -> map f l
- \end{lstlisting}
-
-We generate and applying many examples with QuickCheck for each higher order function.
-We then apply a similar refinement type inference strategy as above to these examples.
-This lets us support a larger subset of the language, and, in theory refinement type inference for other languages too!
-
-There are however repercussions to this approach. We are not guaranteed to generate a correct refinement type because we might not generate a fully representative examples. So we might prune away high order functions that are actually useful. 

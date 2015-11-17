@@ -113,3 +113,25 @@ goodFxn2 :: Int  -> a
 goodFxn3 :: a    -> a
 badFxn   :: Bool -> Bool
 \end{lstlisting}
+
+
+\begin{comment}
+\subsubsection{Extending Liquid Haskell}\label{extLiqHask}
+\markk{MARVIN - write something that makes more sense here}
+LiquidHaskell does not support certain popular syntax extensions to Haskell, such as LambdaCase (TODO list others). In the spirit of this work, we wish to support as much user defined code as possible. To this end, we can extend the refinement type system by allowing refinement type inference on repersentative examples of a higher order function. Take the following code \markk{find something from an actual library on hackage.}
+
+\begin{lstlisting}
+{-# LANGAUGE LambdaCase #-}
+fooMap :: (a -> b) -> [a] -> [b]
+fooMap f = \case
+  [] -> []
+  l -> map f l
+ \end{lstlisting}
+
+We generate and applying many examples with QuickCheck for each higher order function.
+We then apply a similar refinement type inference strategy as above to these examples.
+This lets us support a larger subset of the language, and, in theory refinement type inference for other languages too!
+
+There are however repercussions to this approach. We are not guaranteed to generate a correct refinement type because we might not generate a fully representative examples. So we might prune away high order functions that are actually useful. 
+
+\end{comment}
