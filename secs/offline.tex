@@ -1,7 +1,7 @@
 \subsubsection{Refinement Type Generation}
 
 %>  filter ishigherOrder tys
-We first collect all of the type signatures from our sources (user code, imports, and standard library). We filter through these to select only the higher order functions. Because in Haskell the function type constructor (->) is right binding, any higher order functions must have parenthesis in the type signature, which provides a convenient filtering predicate.
+We first collect all of the type signatures from our sources (user code, imports, and standard library). We filter through these to select only the higher order functions. Because in Haskell the function type constructor ($\to$) is right binding, any higher order functions must have parenthesis in the type signature, which provides a convenient, though over approximating, filtering predicate.
 
 %> let uHOTyps = f 3000 typSigs
 %> let iHOTyps = f 2000 importSigs
@@ -21,18 +21,11 @@ For every predicate provided, we are able to more accurately prune the search sp
 Therefore, it is best to only select as many refinement types as is needed.
 Although this offline stage only needs to be run once given a set of code and imports, liquidHaskell type checking is still fairly expensive.
 
-
 In the case that the input and output type are different, we note that the size measures between two different type constructors are not guaranteed to have any significance.
-A relation on these values may be useful on occasion, but in practice is often only a confounding factor.
+A relation on these values may be useful on occasion, but in practice is more often only a confounding factor.
 Since LiquidHaskell is the largest cost to our system, removing refinement type inference in these ambiguous cases provides a large performance gain.
-In processing the Haskell standard library, base:Prelude, we remove \markk{FILL ME IN} cases of refinement type checking.
-Hypothesis generation about these higher order functions is then deferred to the synthesis stage and where we use a subtype ranking system to good effect.
-
-
-
-
-
-
+As an example of the performance gain, in processing the Haskell standard library, base:Prelude, there are \markk{X} cases of refinement type checking we can skip.
+Without refinement types, we utilize a subtype ranking system in the synthesis stage to prune and order our search space.
 
 
 \subsubsection{User defined data types}

@@ -44,30 +44,28 @@ c _ _ = Nothing
 
 
 
-\subsubsection{Handling folds}
+\subsubsection{Subtype ranking}
 We identify two separate classes of higher order functions - those that take a single first order function, and those that need initial values in addition to a function. The \texttt{map} function only takes a first order function, while \texttt{foldl :: $(a\to b\to a)\to a\to [b]\to a$} requires an initial value for \texttt{a}. While the process described so far handles the former, initial values must also be addressed.
 
 To identify initial values in a type signature, we can use our previous assumption that all hihgher order function have been partially curried to the type \texttt{$\_\to *\to*$}. Adding the further assumption that only one first order function maybe be passed to the higher order function, we simply tag any non-function type in the hole as an initial value. 
 
 Since examples must be given as a concrete type, we can always specialize a our candidate higher order function. If the initial type is an instance of Monoid, we can extract the unit value (mempty in the monoid typeclass) to use as our initial value. 
 
-For lists, the unit element is []. However, there are two valid monoids for numbers, using either (+) or (*) as the operators and resulting in unit elements 0 and 1 respectively. We take both of these values as possibilities since the cost is small \markk{compared to all the refinement type stuff we are doing.}
+For lists, the unit element is []. However, there are two valid monoids for numbers, using either (+) or (*) as the operators and resulting in unit elements 0 and 1 respectively. We take both of these values (along with other useful values of -1, 2, and 3) as possibilities since the cost of testing both values is relatively small.
 
 Requiring our users to write monoid instances may be a nuisance. Additionally, users may have some domain knowledge that a particular value may be useful in their applications of folds. If this is the case, users may write specializations of these functions to be used in synthesis. Since our system automatically considers functions defined in the user code base, \markk{finish sentence}.
 
 \begin{lstlisting}
---to use 5 as an initial value for foldl
+-- to use 5 as an initial value for foldl
 foldl :: (a -> b -> a) -> [b] -> a
 foldl5 f i o = foldl f 5 i o
+
+-- to use 5 as an initial value in all recursions
+initVal :: Int
+initval5 = 5
 \end{lstlisting}
 
 This same procedure is applied to fix instances of first order functions.
 
-\subsubsection{Soundness and Completeness}\label{sound}
-\markk{for completness, can we show that we are complete within a specific domain? Also see \ref{extLiqHask} for more on completness.}
+In the implementation, we actually build new functions with the name of the composed functions, and adjust the type signature accordingly.
 
-From the procedure outlined above, it is clear that no function will be returned by the algorithm that does not fit the examples given, since functions are validated before being reported. Still, it is possible for the synthesis procedure to return a function that does not capture the user's intent. Generally, this can be solved by supplying more examples to narrow the set of possible fitting functions.
-
-However, depending on what the user is trying to synthesize, and which examples have been provided, it is possible for new examples to increase the search space. If, for example, a user gives only positive examples for a \texttt{filter}, the refinement type predicate discovery will assume that the lists do not change size, and will likely return \texttt{map id} as a result.
-
-On the other hand, the set of functions that the algorithm can produce is fairly broad. It is able to search through the entire space of higher order functions that have been specialized with a first-order function, when considering the functions that are in scope. We will see in section~\ref{sec:evaluation} how broad this space actually is.

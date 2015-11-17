@@ -14,16 +14,14 @@ types = * | * -> types
 -- * matches on Type Variables and Constructors
 \end{lstlisting}
 
-Input, Output = *
 We do not explicitly address synthesizing first order functions to fit the examples. We do employ a method to synthesize first order functions to act as the component functions for higher-order functions. Existing work has shown promising advances in synthesizing top level, first order functions\cite{potential, reviewers}. While it is out of the scope of this paper to go into details, we briefly discuss integration of dedicated first order synthesis procedures into our tool in section \ref{conclusions}.
 
 
 \subsection{Example Syntax}
 The user must give examples as a pair of values. We use the \texttt{:->} operator for clarity to differentiate between tuples and examples.
-We require all higher order functions be be of a unified signature \texttt{$\_ \to * \to *$}, where the penultimate kind of the signature is the input and the final kind is the the output. \markk{Put in a note about data kinds here.} Functionally, this means we require that the user partially uncurry any higher order function they are interested in using during synthesis.
+We require all higher order functions be be of a unified signature \texttt{$\_ \to * \to *$}, where the penultimate kind of the signature is the input and the final kind is the the output. \markk{Put in a note about data kinds here.} 
 
-This is a simple procedure, but requires user knowledge of which parameters to the function will be given by the examples. 
-As an example consider 
+Functionally, this means we require that the user partially uncurry any higher order function they are interested in using during synthesis. This is a simple procedure, but requires user knowledge of which parameters to the function will be given by the examples. As an example consider 
 
 \begin{lstlisting}
 zipWith' :: (a -> b -> c) -> ([a],[b]) -> [c]

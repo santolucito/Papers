@@ -1,6 +1,16 @@
-here is a big table that takes up a whole page
+\subsection{Soundness and Completeness}\label{sound}
+\markk{for completness, can we show that we are complete within a specific domain? See section \ref{problem}}
 
-\subsection{Optimizations}
+From the procedure outlined above, it is clear that no function will be returned by the algorithm that does not fit the examples given, since functions are validated before being reported. Still, it is possible for the synthesis procedure to return a function that does not capture the user's intent. Generally, this can be solved by supplying more examples to narrow the set of possible fitting functions.
+
+However, depending on what the user is trying to synthesize, and which examples have been provided, it is possible for new examples to increase the search space. If, for example, a user gives only positive examples for a \texttt{filter}, the refinement type predicate discovery will assume that the lists do not change size, and will likely return \texttt{map id} as a result.
+
+On the other hand, the set of functions that the algorithm can produce is fairly broad. It is able to search through the entire space of higher order functions that have been specialized with a first-order function, when considering the functions that are in scope. We will see in section~\ref{sec:evaluation} how broad this space actually is.
+
+
+\subsection{Performance}
+
+Here is a big table that takes up a whole page
 
 Since the standard library can be considered a relatively stable set of code, we can cache the refinement type inference to reduce the build time.
-On my machine, it removes ~40 seconds from the build time.
+On my machine, it removes ~20 seconds from the build time.
