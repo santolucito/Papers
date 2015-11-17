@@ -14,30 +14,24 @@ We automatically generate refinement types for our higher order functions that w
 In the case that the input and output types of the higher order functions are the same (up to the top level type constructor), we generate a LiquidHaskell predicate that relates the size of those types.
 the size relation that applies to the higher order functions must also apply to the examples in order to consider that function as a candidate.   
 
-In the case that the input and output type are different, we note that the size measures between two different type constructors are not guaranteed to have any significance.
-A relation on these values may be useful on occasion, but in practice is often only a confounding factor.
-Since LiquidHaskell is the largest cost to our system, removing refinement type inference in these ambiguous cases provides a large performance gain.
-In processing the Haskell standard library, base:Prelude, we remove \markk{FILL ME IN} cases of refinement type checking.
-Hypothesis generation about these higher order functions is then deferred to the synthesis stage and where we use a subtype ranking system to good effect.
-
-In order to derive these refinement types, we require all higher order functions be be of a unified signature \texttt{$\_ \to * \to *$}, where the penultimate kind of the signature is the input and the final kind is the the output. \markk{Put in a note about data kinds here.} Functionally, this means we require that the user partially uncurry any higher order function they are interested in using during synthesis.
-
-This is a simple procedure, but requires user knowledge of which parameters to the function will be given by the examples. 
-As an example consider 
-
-\begin{lstlisting}
-zipWith' :: (a -> b -> c) -> ([a],[b]) -> [c]
-zipWith' f (xs,ys) = zipWith f xs ys
-\end{lstlisting}
-%The liquidHaskell predicate applied to this signature will be of the effect of \texttt{len([a],[b]) = len([c])}.
-
-
 %> map rTypeTemplate ["=","<=",">="]
 When the input and output types are the same, or use the same top level type constructor, we generate hypotheses as liquidHaskell predicates.
 Our predicates specify size constraints on input and output of $\leq,\geq,=$.
 For every predicate provided, we are able to more accurately prune the search space of higher-order functions, but we must test every higher-order function in scope on these predicates. 
 Therefore, it is best to only select as many refinement types as is needed.
 Although this offline stage only needs to be run once given a set of code and imports, liquidHaskell type checking is still fairly expensive.
+
+
+In the case that the input and output type are different, we note that the size measures between two different type constructors are not guaranteed to have any significance.
+A relation on these values may be useful on occasion, but in practice is often only a confounding factor.
+Since LiquidHaskell is the largest cost to our system, removing refinement type inference in these ambiguous cases provides a large performance gain.
+In processing the Haskell standard library, base:Prelude, we remove \markk{FILL ME IN} cases of refinement type checking.
+Hypothesis generation about these higher order functions is then deferred to the synthesis stage and where we use a subtype ranking system to good effect.
+
+
+
+
+
 
 
 

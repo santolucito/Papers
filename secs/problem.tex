@@ -1,2 +1,17 @@
 In this section we formally define the space of functions we are interested in synthesizing. Using this definition we will show in section \ref{sound}, that although our algorithm is not complete in general (by the inherent nature of examples), it is complete for the subset of the language we define here.
 
+We are only interested in in synthesizing higher order functions. Much work has been on synthesizing first order functions, so we consider this problem to be out of the scope of this paper.
+
+
+\subsubsection{Example Syntax}
+The user must give examples as a pair of values. 
+In order to derive these refinement types, we require all higher order functions be be of a unified signature \texttt{$\_ \to * \to *$}, where the penultimate kind of the signature is the input and the final kind is the the output. \markk{Put in a note about data kinds here.} Functionally, this means we require that the user partially uncurry any higher order function they are interested in using during synthesis.
+
+This is a simple procedure, but requires user knowledge of which parameters to the function will be given by the examples. 
+As an example consider 
+
+\begin{lstlisting}
+zipWith' :: (a -> b -> c) -> ([a],[b]) -> [c]
+zipWith' f (xs,ys) = zipWith f xs ys
+\end{lstlisting}
+%The liquidHaskell predicate applied to this signature will be of the effect of \texttt{len([a],[b]) = len([c])}.
