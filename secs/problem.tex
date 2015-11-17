@@ -1,11 +1,26 @@
 In this section we formally define the space of functions we are interested in synthesizing. Using this definition we will show in section \ref{sound}, that although our algorithm is not complete in general (by the inherent nature of examples), it is complete for the subset of the language we define here.
 
-We are only interested in in synthesizing higher order functions. Much work has been on synthesizing first order functions, so we consider this problem to be out of the scope of this paper.
+We are interested in synthesizing higher order functions that manipulate data structures. We support the classic functions like \texttt{map, filter, foldl}, but also user defined higher order functions from user code, or imported modules. 
+
+\begin{lstlisting}
+solutionProgram ::
+       (* -> types)  -- Component Function
+    ->  types        -- Initial Values
+    ->  *          -- Input
+    ->  *          -- Output
+
+types = * | * -> types
+
+-- * matches on Type Variables and Constructors
+\end{lstlisting}
+
+Input, Output = *
+We do not explicitly address synthesizing first order functions to fit the examples. We do employ a method to synthesize first order functions to act as the component functions for higher-order functions. Existing work has shown promising advances in synthesizing top level, first order functions\cite{potential, reviewers}. While it is out of the scope of this paper to go into details, we briefly discuss integration of dedicated first order synthesis procedures into our tool in section \ref{conclusions}.
 
 
-\subsubsection{Example Syntax}
-The user must give examples as a pair of values. 
-In order to derive these refinement types, we require all higher order functions be be of a unified signature \texttt{$\_ \to * \to *$}, where the penultimate kind of the signature is the input and the final kind is the the output. \markk{Put in a note about data kinds here.} Functionally, this means we require that the user partially uncurry any higher order function they are interested in using during synthesis.
+\subsection{Example Syntax}
+The user must give examples as a pair of values. We use the \texttt{:->} operator for clarity to differentiate between tuples and examples.
+We require all higher order functions be be of a unified signature \texttt{$\_ \to * \to *$}, where the penultimate kind of the signature is the input and the final kind is the the output. \markk{Put in a note about data kinds here.} Functionally, this means we require that the user partially uncurry any higher order function they are interested in using during synthesis.
 
 This is a simple procedure, but requires user knowledge of which parameters to the function will be given by the examples. 
 As an example consider 
@@ -14,4 +29,7 @@ As an example consider
 zipWith' :: (a -> b -> c) -> ([a],[b]) -> [c]
 zipWith' f (xs,ys) = zipWith f xs ys
 \end{lstlisting}
+
+Any types that are between the input and first order function will be assumed to be initial values for the recursions. For example, \texttt{foldl (+)} needs an initial value of 0 to become the sum function.
+
 %The liquidHaskell predicate applied to this signature will be of the effect of \texttt{len([a],[b]) = len([c])}.
