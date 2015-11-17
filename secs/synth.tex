@@ -16,10 +16,50 @@ exs = [[1,2,3,4] :-> [1,3],
 
 Once these higher order functions have been culled from the pool of candidates, we iterate through each in best-first order. For each higher-order function, we supply it with arguments until it is compatible with the type signature implied by the example set. By convention, we take the final argument of the function to be the input, which means that higher-order functions that take multiple inputs have to explicitly be uncurried. Value types are satisfied by selecting from a pool of default values, and function types are satisfied by searching for first-order functions that would make the resulting signatures match. If it is not possible to find values that fit, the search moves on to the next higher-order function.
 
-\subsubsection{Dismantling procedures}
+\subsubsection{Dismantling procedure}
 
-A \textit{dismantling procedure} prunes the first order function search space.
-Subexample generation from that other paper\cite{isil} is one example of a (powerful) dismantling procedure. Subexample generation also gives the ability to recursively call the synthesis engine to generate programs with multiple applications of a high order function.
+A \textit{dismantling procedure} prunes the first order function search space by using information from the top level examples, and the current state of synthesis.
+Any particular instance of deductive of reasoning can be applied to dismantle top level information.
+From the specific examples, we might deduce constraints on the component function.
+Given a candidate higher order function, we can also infer type constraints on the component function.
+In either case, we use abductive reasoning to make a guess at the function, which then guide our further search.
+
+OK HERE IS WHAT HAPPENS, BS ASIDE
+
+We specialize the type of the higher order function to the examples as much as possible.
+How does this work exactly???
+
+Given this partially concrete type for the higher order function, we search for first order functions that will fit the component signature.
+If the first order function is a concrete instance of the component signature, we accept it as a possibility.
+This occurs when we try to use the first order function \texttt{negate::Int$\to$Int} as a component for \texttt{::a$\to$a}.
+If the component signature is a concrete instance of the first order function, we can also accept it as a possibility.
+This occurs when we try to use \texttt{id::a->a} as a component for \texttt{::Int->Int}.
+
+In the case that neither of those situations hold, we try to apply a value to the first order function.
+For instance, if the component signature is \texttt{::Int->Int}, and we have the first order functions \texttt{(+)::Int->Int->Int}, we apply some initial values to \texttt{(+)} to get a new function (e.g. \texttt{(+1)}) that fits the component signature.
+
+If the initial type is an instance of Monoid, we can extract the unit value (mempty in the monoid typeclass) to use as our initial value. 
+
+For lists, the unit element is []. However, there are two valid monoids for numbers, using either (+) or (*) as the operators and resulting in unit elements 0 and 1 respectively. We take both of these values (along with other useful values of -1, 2, and 3) as possibilities since the cost of testing both values is relatively small.
+
+Requiring our users to write monoid instances may be a nuisance. Additionally, users may have some domain knowledge that a particular value may be useful in their applications of folds. If this is the case, users may write specializations of these functions to be used in synthesis. Since our system automatically considers functions defined in the user code base, \markk{finish sentence}.
+
+\begin{lstlisting}
+-- to use 5 as an initial value for foldl
+foldl :: (a -> b -> a) -> [b] -> a
+foldl5 f i o = foldl f 5 i o
+
+-- to use 5 as an initial value in all recursions
+initVal :: Int
+initval5 = 5
+\end{lstlisting}
+
+
+
+%If the types of a higher order function do not match, we 
+
+Subexample generation from that other paper\cite{isil} is one example of a (powerful) dismantling procedure.
+Subexample generation also gives the ability to recursively call the synthesis engine to generate programs with multiple applications of a high order function.
 Because subexample generation is hard, and we dont know how to do it yet, we present a different idea.
 Our dismantling procedure will deduce a specialized component signature given a higher order signature and the examples signature.
 
@@ -42,29 +82,13 @@ c _ _ = Nothing
 
 \end{lstlisting}
 
+This cost function is used below.
 
-
-\subsubsection{Subtype ranking}
 We identify two separate classes of higher order functions - those that take a single first order function, and those that need initial values in addition to a function. The \texttt{map} function only takes a first order function, while \texttt{foldl :: $(a\to b\to a)\to a\to [b]\to a$} requires an initial value for \texttt{a}. While the process described so far handles the former, initial values must also be addressed.
 
 To identify initial values in a type signature, we can use our previous assumption that all hihgher order function have been partially curried to the type \texttt{$\_\to *\to*$}. Adding the further assumption that only one first order function maybe be passed to the higher order function, we simply tag any non-function type in the hole as an initial value. 
 
-Since examples must be given as a concrete type, we can always specialize a our candidate higher order function. If the initial type is an instance of Monoid, we can extract the unit value (mempty in the monoid typeclass) to use as our initial value. 
-
-For lists, the unit element is []. However, there are two valid monoids for numbers, using either (+) or (*) as the operators and resulting in unit elements 0 and 1 respectively. We take both of these values (along with other useful values of -1, 2, and 3) as possibilities since the cost of testing both values is relatively small.
-
-Requiring our users to write monoid instances may be a nuisance. Additionally, users may have some domain knowledge that a particular value may be useful in their applications of folds. If this is the case, users may write specializations of these functions to be used in synthesis. Since our system automatically considers functions defined in the user code base, \markk{finish sentence}.
-
-\begin{lstlisting}
--- to use 5 as an initial value for foldl
-foldl :: (a -> b -> a) -> [b] -> a
-foldl5 f i o = foldl f 5 i o
-
--- to use 5 as an initial value in all recursions
-initVal :: Int
-initval5 = 5
-\end{lstlisting}
-
+Since examples must be given as a concrete type, we can always specialize a our candidate higher order function. 
 This same procedure is applied to fix instances of first order functions.
 
 In the implementation, we actually build new functions with the name of the composed functions, and adjust the type signature accordingly.
