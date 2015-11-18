@@ -1,47 +1,46 @@
 \subsubsection{Refinement Type Generation}
 
-%>  filter ishigherOrder tys
-We first collect all of the type signatures from our sources (user code, imports, and standard library). We filter through these to select only the higher order functions. Because in Haskell the function type constructor ($\to$) is right binding, any higher order functions must have parenthesis in the type signature, which provides a convenient, though over approximating, filtering predicate.
+% collectTypesAndWeights
+The first step of our algorithm is line 7 of Listing \ref{listing:Algo}. We first collect all of the type signatures from our sources (user code, imports, and standard library). In order to rank the higher-order functions, we assign weights based on their source location. User-defined functions are given the highest priority, while direct imports are given less, and the standard libraries are given the least. These rankings will contribute to the final ranking of candidate functions in the synthesis stage when we match the component function signatures on the examples.
 
-%> let uHOTyps = f 3000 typSigs
-%> let iHOTyps = f 2000 importSigs
-%> let pHOTyps = f 1000 preludeTypSigs
-In order to rank the higher-order functions, we assign weights based on their source location. User-defined functions are given the highest priority, while direct imports are given less, and the standard libraries are given the least. These rankings will contribute to the final ranking of candidate functions in the synthesis stage when we match the component function signatures on the examples.
+% filter isHigherOrder
+We filter through these to select only the higher order functions. Because in Haskell the function type constructor ($\to$) is right binding, any higher order functions must have parenthesis in the type signature, which provides a convenient, though over approximating, filtering predicate.
 
-We automatically generate refinement types for our higher order functions that will be used to prune the search space in synthesis.
-In the case that the input and output types of the higher order functions are the same (up to the top level type constructor), we generate a LiquidHaskell predicate that relates the size of those types.
-the size relation that applies to the higher order functions must also apply to the examples in order to consider that function as a candidate.   
-Since we are using LiquidHaskell as a black box, we require this function be interact with the outside world and use IO.
+% assignRTypes
+Listing \ref{listing:addRType} expands on line 9 of Listing \ref{listing:Algo} to show how we automatically generate refinement types for our higher order functions.
+These refinement will be used to prune the search space in synthesis, as explained in detail in section \ref{synth}.
+In brief, the size relation that applies to the higher order functions must also apply to the examples in order to consider that function as a candidate.
+Our \texttt{allPossibleRTypes} predicates specify size constraints on input and output of $\leq,\geq,=$.
 
-\begin{lstlisting}
-addRType :: Code -> Sig -> IO(Sig, [RType])
-addRType c sig = do
-   let testR = compareTypes (lastTyps sig)
-   x <- if testR 
-        then rTypeAssign c sig
-        else return [noRType]
+\begin{lstlisting}[caption=Adding refinement types to higher order functions,label=listing:addRType]
+assignRTypes ::Sig -> IO(Sig, [RType])
+assignRTypes sig = do
+   x <- if eqTypes (lastTyps sig) 
+       then rTypeAssign sig
+       else return [noRType]
    return (t, x)
-\end{lstlisting}
 
+testRs :: Sig -> IO([RType])
+testRs s =
+  filterM (runLiquidHaskell s) allPossibleRTypes
+\end{lstlisting}
 
 %> map rTypeTemplate ["=","<=",">="]
-When the input and output types are the same (line 3 of code above), or use the same top level type constructor, we generate hypotheses as liquidHaskell predicates.
-Our predicates specify size constraints on input and output of $\leq,\geq,=$.
-For every predicate provided, we are able to more accurately prune the search space of higher-order functions, but we must test every higher-order function in scope on these predicates. 
-Therefore, it is best to only select as many refinement types as is needed.
-Although this offline stage only needs to be run once given a set of code and imports, liquidHaskell type checking is still fairly expensive (in part because it is applied using IO).
+For every predicate we test against, we are able to more accurately prune the search space of higher-order functions.
+However, since we must test every higher-order function in scope on these predicates, the cost to add a predicate is high.
+Although this offline, engine building stage only needs to be run once on a given a set of code and imports, liquidHaskell type checking is still fairly expensive (in part because it is applied using IO).
+Therefore, it is best to only select as many refinement types as are needed.
 
-\begin{lstlisting}
-{-@ map :: _    ->
-          i:[a] ->
-          {o:[b] | (len i) = (len o)} @-}
+\begin{lstlisting}[caption=A satisfying refinement type for map]
+map :: _ $\to$ i:[a] $\to$ {o:[b] | (len i) = (len o)}
 \end{lstlisting}
 
-In the case that the input and output type are different, we note that the size measures between two different type constructors are not guaranteed to have any significance.
-A relation on these values may be useful on occasion, but in practice is more often only a confounding factor.
+Notice that in line 3 of Listing \ref{listing:addRType}, we specify that we should only generate refinement types in the case that the input and output types of the higher order functions are the same (up to equality on the top level type constructor).
+In the case that the input and output type are different, the size measures between two different type constructors are not guaranteed to have any significance.
+A relation on these values may be useful on occasion, but in practice is more often only a confounding factor, leading to wasted computation.
 Since LiquidHaskell is the largest cost to our system, removing refinement type inference in these ambiguous cases provides a large performance gain.
-As an example of the performance gain, in processing the Haskell standard library, base:Prelude, there are \markk{X} cases of refinement type checking we can skip.
-Without refinement types, we utilize a subtype ranking system in the synthesis stage to prune and order our search space.
+As an example of the performance gain, in processing the Haskell standard library, base:Prelude, there are 7 out of 30 cases of higher order functions that do not need to be checked against refinement types using this approach.
+When we do not assign refinement types to a higher order function, we instead prune our search space in the synthesis stage by utilizing a subtype ranking system to be explained in more detail in section \ref{synth}.
 
 
 \subsubsection{User defined data types}

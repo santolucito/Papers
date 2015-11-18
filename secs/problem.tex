@@ -1,6 +1,6 @@
-In this section, we formally define the space of functions we are interested in synthesizing. In section \ref{sound}, we will use this definition to show that our algorithm is complete for this subset of functions, although by the inherent nature of examples, it cannot be complete in general.
+In this section, we formally define the space of functions we are interested in synthesizing. In section \ref{sound}, we will use this definition to show that although by the inherent nature of examples, it cannot be complete in general, our algorithm is complete for this subset of functions.
 
-Formally, we support synthesizing first-order fitting functions that are constructed from one higher-order function in one functional argument. In general, our solutions can be expressed as:
+In particular, we support synthesizing first-order fitting functions that are constructed from one higher-order function in one first-order functional argument. Our solutions can be expressed up to reordering of terms as:
 
 \begin{lstlisting}
 solution ::
@@ -12,23 +12,22 @@ types = * | * -> types
 -- * matches on type variables and constructors.
 \end{lstlisting}
 
-This structure captures most common data structure manipulations. Generally, the component function is applied across the \textsf{input} data structure, to result in an \textsf{output} data structure or reduction. As we will show in our evaluation (section \ref{evaluation}) this set is expressive enough to support the classic \texttt{map}, \texttt{filter}, and \texttt{fold} functions, as well as higher order functions found in imported modules and user code.
+Generally, the component function is applied across the \textsf{input} data structure, which the \textsf{solution} uses to construct an \textsf{output} data structure or reduction. As we will argue in section \ref{evaluation} this set is expressive enough to support the classic \texttt{map}, \texttt{filter}, and \texttt{fold} functions, as well as higher order functions found in imported modules and user-supplied code.
 
-Our algorithm does not explicitly try to fit component functions to the examples. Instead, we leverage a promising body of existing work in synthesizing top-level, first-order functions \cite{potential, reviewers}. While it is out of scope to go in to details, we will briefly discuss the integration of dedicated first-order synthesis procedures in section \ref{conclusions}.
+Our algorithm does not explicitly try to fit component functions to the examples. Instead, we leverage a promising body of existing work in synthesizing top-level, first-order functions \cite{potential, reviewers}. While it is out of scope to go in to detail, we will briefly discuss the integration of these synthesis procedures in section \ref{conclusions}.
 
 \subsection{Example Syntax}\label{exampleSyntax}
 Formally speaking, an \textit{example} is a pair of values with distinguished ``input'' and ``output'' elements, and an \textit{example set} is a set of examples all of whose inputs are of like type, and all of whose outputs are of like type. The output type does not necessarily match the input type.
 
-The user supplies examples via a custom tuple constructor \texttt{:->}. This operator is used to differentiate between generic pairs and examples. 
-We require all higher order functions be be of a unified signature \texttt{$\_ \to * \to *$}, where the penultimate kind of the signature is the input and the final kind is the the output. \markk{Put in a note about data kinds here.} 
+A user supplies examples via a custom pair constructor \texttt{:->}. This operator is used to differentiate between generic pairs and examples, but does not confer any additional structure. We require all higher order functions to be of a unified signature \texttt{$\_ \to * \to *$}, where the final kind of the signature is a function mapping the input type to the output type. Here, a kind is understood to be the type of a type constructor, in this case \texttt{$\to$}, which constructs a function type from two other types.
 
-Functionally, this means we require that the user partially uncurry any higher order function they are interested in using during synthesis. This is a simple procedure, but requires user knowledge of which parameters to the function will be given by the examples. As an example consider 
+The practical consequence of these restrictions is that a user will have to partially uncurry (collapsing trailing function arguments into a single tuple argument) any higher-order function they are interested in using during synthesis. This also means that any higher-order function may only be polymorphic in its input and output types so that all type variables in its signature must be resolvable from this data alone. This is a simple procedure, but requires user knowledge of which parameters to the function will be given by the examples; consider:
 
 \begin{lstlisting}
-zipWith' :: (a -> b -> c) -> ([a],[b]) -> [c]
+zipWith' :: (a -> b -> c) -> ([a], [b]) -> [c]
 zipWith' f (xs,ys) = zipWith f xs ys
 \end{lstlisting}
 
-Any types that are between the input and first order function will be assumed to be initial values for the recursions. For example, \texttt{foldl (+)} needs an initial value of 0 to become the sum function.
+Then, any types that are between the input and first order function will be assumed to be static initial values. For example, \texttt{foldl (+)} needs an initial value of 0 to become the sum function.
 
 %The liquidHaskell predicate applied to this signature will be of the effect of \texttt{len([a],[b]) = len([c])}.

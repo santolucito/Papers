@@ -85,12 +85,12 @@ The cost relation can be formalized as follows in the pseudocode for the cost fu
 
 c :: Type -> Type -> Maybe Int
 c (TyParen t1) (TyParen t2) =
-  fmap (1+) $ c t1 t2
+  fmap (1+)  c t1 t2
 c (TyFun t1 t1') (TyFun t2 t2') =
    fmap (1+) (liftA2 (+) (c t1 t2) (c t1' t2'))
 c (TyCon q1) (TyCon q2) =
    if (q1==q2) then Just 20 else Nothing
-c _ _ = Nothing
+c \_ \_ = Nothing
 
 \end{lstlisting}
 

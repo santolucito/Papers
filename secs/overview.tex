@@ -17,10 +17,10 @@ Once the candidate higher order functions have been chosen, the synthesis engine
 
 \markk{explain each of these lines in the rest of the paper, citing line numbers. once all of the lines are covered here we are done}
 
-\begin{lstlisting}[caption=A pseudocode representation of the build and synthesis stages of the synthesis algorithm. We will explain each line of this in the proceeding sections., label=psuedoAlgo]
+\begin{lstlisting}[caption=A pseudocode representation of the build and synthesis stages of the synthesis algorithm. We will explain each line of this in the proceeding sections., label=listing:Algo]
 main = do
   eng <- build
-  ex <- getExamples
+  ex  <- getExamples
   synth eng ex
   
 build = do
@@ -33,7 +33,7 @@ synth eng ex = do
   -- assign examples a refinement type too
   exType   <- getExampleType ex
   exRType  <- if   sameInOut exType
-             then assignRType exType
+             then assignRTypes exType
              else noRType
   -- make candidate functions and programs
   hoFxns <- rankByTypeMatch exRType eng
