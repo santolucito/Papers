@@ -8,11 +8,15 @@ We first collect all of the type signatures from our sources (user code, imports
 %> let pHOTyps = f 1000 preludeTypSigs
 In order to rank the higher-order functions, we assign weights based on their source location. User-defined functions are given the highest priority, while direct imports are given less, and the standard libraries are given the least. These rankings will contribute to the final ranking of candidate functions in the synthesis stage when we match the component function signatures on the examples.
 
-%> hoRTyps <- mapM (addRType fc) (map fst allHOTyps)
-%> HigherOrderFxn -> (injectRFxnType fxn .fst)
 We automatically generate refinement types for our higher order functions that will be used to prune the search space in synthesis.
 In the case that the input and output types of the higher order functions are the same (up to the top level type constructor), we generate a LiquidHaskell predicate that relates the size of those types.
 the size relation that applies to the higher order functions must also apply to the examples in order to consider that function as a candidate.   
+
+\begin{lstlisting}
+hoRTyps <- mapM (addRType fc) allHOTyps
+HigherOrderFxn -> (injectRFxnType fxn .fst)
+\end{lstlisting}
+
 
 %> map rTypeTemplate ["=","<=",">="]
 When the input and output types are the same, or use the same top level type constructor, we generate hypotheses as liquidHaskell predicates.
