@@ -14,3 +14,30 @@ During the offline phase, the algorithm first scans the user-provided code, the 
 Once this stage is complete, the user can make online queries to the synthesis engine, which will search the space of constructable functions for those that fit the input examples. First, the engine computes a refinement type that fits the examples. This type is matched against the refinement types of the known higher-order functions, and the weights of each known function are adjusted based on how close the types match, if at all.
 
 Once the candidate higher order functions have been chosen, the synthesis engine performs a best-first search for a program that fits all of the input and output examples by composing the candidates with first-order functions. For example, the higher-order function \texttt{map} might be supplied the \texttt{length} function if the example inputs are lists of lists of integers and the output examples are all lists of integers. The programs that are examined during the search are evaluated against the example set and are reported to the user as they match. Because the weights favor local declarations, the highest-ranked programs are likely to be the most idiomatic.
+
+\markk{explain each of these lines in the rest of the paper, citing line numbers. once all of the lines are covered here we are done}
+
+\begin{lstlisting}[caption=A pseudocode representation of the build and synthesis stages of the synthesis algorithm. We will explain each line of this in the proceeding sections., label=psuedoAlgo]
+main = do
+  eng <- build
+  ex <- getExamples
+  synth eng ex
+  
+build = do
+  allTypes   <- collectTypesAndWeights
+  allHOTypes <- filter isHigherOrder allTypes
+  allRTypes  <- assignRTypes allHOTypes
+  return (allTypes,allRTypes)
+  
+synth eng ex = do
+  -- assign examples a refinement type too
+  exType   <- getExampleType ex
+  exRType  <- if   sameInOut exType
+             then assignRType exType
+             else noRType
+  -- make candidate functions and programs
+  hoFxns <- rankByTypeMatch exRType eng
+  progs  <- makeFxns exType hoFxns
+  -- test the ranked list of possible programs
+  validProgs <- filter (testOn ex) progs
+\end{lstlisting}

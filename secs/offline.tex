@@ -11,19 +11,31 @@ In order to rank the higher-order functions, we assign weights based on their so
 We automatically generate refinement types for our higher order functions that will be used to prune the search space in synthesis.
 In the case that the input and output types of the higher order functions are the same (up to the top level type constructor), we generate a LiquidHaskell predicate that relates the size of those types.
 the size relation that applies to the higher order functions must also apply to the examples in order to consider that function as a candidate.   
+Since we are using LiquidHaskell as a black box, we require this function be interact with the outside world and use IO.
 
 \begin{lstlisting}
-hoRTyps <- mapM (addRType fc) allHOTyps
-HigherOrderFxn -> (injectRFxnType fxn .fst)
+addRType :: Code -> Sig -> IO(Sig, [RType])
+addRType c sig = do
+   let testR = compareTypes (lastTyps sig)
+   x <- if testR 
+        then rTypeAssign c sig
+        else return [noRType]
+   return (t, x)
 \end{lstlisting}
 
 
 %> map rTypeTemplate ["=","<=",">="]
-When the input and output types are the same, or use the same top level type constructor, we generate hypotheses as liquidHaskell predicates.
+When the input and output types are the same (line 3 of code above), or use the same top level type constructor, we generate hypotheses as liquidHaskell predicates.
 Our predicates specify size constraints on input and output of $\leq,\geq,=$.
 For every predicate provided, we are able to more accurately prune the search space of higher-order functions, but we must test every higher-order function in scope on these predicates. 
 Therefore, it is best to only select as many refinement types as is needed.
-Although this offline stage only needs to be run once given a set of code and imports, liquidHaskell type checking is still fairly expensive.
+Although this offline stage only needs to be run once given a set of code and imports, liquidHaskell type checking is still fairly expensive (in part because it is applied using IO).
+
+\begin{lstlisting}
+{-@ map :: _    ->
+          i:[a] ->
+          {o:[b] | (len i) = (len o)} @-}
+\end{lstlisting}
 
 In the case that the input and output type are different, we note that the size measures between two different type constructors are not guaranteed to have any significance.
 A relation on these values may be useful on occasion, but in practice is more often only a confounding factor.
@@ -41,7 +53,7 @@ In fact, a size function could just be a constant function, which means the syst
 
 As an example, take the code from section \ref{examples} for synthesizing a music function.
 the user would have needed to provide a measure function for Music a.
-This measure will allow liquidHaskell to draw conclusions about the size of examples of type [Music a :$\to$ Music a], as well as conclusions about higher order functions over the Music data structure.
+This measure will allow liquidHaskell to draw conclusions about the size of examples of type [Music a :-> Music a], as well as conclusions about higher order functions over the Music data structure.
 
 \begin{lstlisting}
 import Euterpea
@@ -50,9 +62,9 @@ import Euterpea
 len :: Music a -> Int
 len m =
   case m of
-    Prim _  -> 1
-    m1 :+: m2 -> len m1 + len m2
-    m1 :=: m2 -> len m1 + len m2
+    Prim _     -> 1
+    m1 :+: m2  -> len m1 + len m2
+    m1 :=: m2  -> len m1 + len m2
     Modify c m -> len m
 \end{lstlisting}
 

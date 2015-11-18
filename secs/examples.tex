@@ -25,7 +25,7 @@ prog' = concatMap (replicate 2)
 
 
 
-If a user is importing a library, they can also synthesize programs that use those function. As an example, we show code to transpose a music value from the Euterpea DSL for music in haskell. The solution uses the builtin functions \texttt{mMap} (mapping over music values) and \texttt{trans :: Int$\to$Music Pitch$\to$Music Pitch} to transpose a Music Pitch by a value.
+If a user is importing a library, they can also synthesize programs that use those function. As an example, we show code to transpose a music value from the Euterpea DSL for music in haskell. The solution uses the builtin functions \texttt{mMap} (mapping over music values) and \texttt{trans :: Int->Music Pitch->Music Pitch} to transpose a Music Pitch by a value.
 
 \begin{lstlisting}
 import Euterpea

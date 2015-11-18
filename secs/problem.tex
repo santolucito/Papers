@@ -1,24 +1,25 @@
-In this section we formally define the space of functions we are interested in synthesizing. Using this definition we will show in section \ref{sound}, that although our algorithm is not complete in general (by the inherent nature of examples), it is complete for the subset of the language we define here.
+In this section, we formally define the space of functions we are interested in synthesizing. In section \ref{sound}, we will use this definition to show that our algorithm is complete for this subset of functions, although by the inherent nature of examples, it cannot be complete in general.
 
-We are interested in synthesizing higher order functions that manipulate data structures. We support the classic functions like \texttt{map, filter, foldl}, but also user defined higher order functions from user code, or imported modules. 
+Formally, we support synthesizing first-order fitting functions that are constructed from one higher-order function in one functional argument. In general, our solutions can be expressed as:
 
 \begin{lstlisting}
-solutionProgram ::
-       (* -> types)  -- Component Function
-    ->  types        -- Initial Values
-    ->  *          -- Input
-    ->  *          -- Output
-
+solution ::
+           (* -> types)  -- Component Function
+        ->  types        -- Initial Values
+        ->  *            -- Input
+        ->  *            -- Output
 types = * | * -> types
-
--- * matches on Type Variables and Constructors
+-- * matches on type variables and constructors.
 \end{lstlisting}
 
-We do not explicitly address synthesizing first order functions to fit the examples. We do employ a method to synthesize first order functions to act as the component functions for higher-order functions. Existing work has shown promising advances in synthesizing top level, first order functions\cite{potential, reviewers}. While it is out of the scope of this paper to go into details, we briefly discuss integration of dedicated first order synthesis procedures into our tool in section \ref{conclusions}.
+This structure captures most common data structure manipulations. Generally, the component function is applied across the \textsf{input} data structure, to result in an \textsf{output} data structure or reduction. As we will show in our evaluation (section \ref{evaluation}) this set is expressive enough to support the classic \texttt{map}, \texttt{filter}, and \texttt{fold} functions, as well as higher order functions found in imported modules and user code.
 
+Our algorithm does not explicitly try to fit component functions to the examples. Instead, we leverage a promising body of existing work in synthesizing top-level, first-order functions \cite{potential, reviewers}. While it is out of scope to go in to details, we will briefly discuss the integration of dedicated first-order synthesis procedures in section \ref{conclusions}.
 
 \subsection{Example Syntax}\label{exampleSyntax}
-The user must give examples as a pair of values. We use the \texttt{:->} operator for clarity to differentiate between tuples and examples.
+Formally speaking, an \textit{example} is a pair of values with distinguished ``input'' and ``output'' elements, and an \textit{example set} is a set of examples all of whose inputs are of like type, and all of whose outputs are of like type. The output type does not necessarily match the input type.
+
+The user supplies examples via a custom tuple constructor \texttt{:->}. This operator is used to differentiate between generic pairs and examples. 
 We require all higher order functions be be of a unified signature \texttt{$\_ \to * \to *$}, where the penultimate kind of the signature is the input and the final kind is the the output. \markk{Put in a note about data kinds here.} 
 
 Functionally, this means we require that the user partially uncurry any higher order function they are interested in using during synthesis. This is a simple procedure, but requires user knowledge of which parameters to the function will be given by the examples. As an example consider 
