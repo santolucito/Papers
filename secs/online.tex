@@ -24,17 +24,30 @@ From the specific examples, we might deduce constraints on the component functio
 Given a candidate higher order function, we can also infer type constraints on the component function.
 In either case, we use abductive reasoning to make a guess at the function, which then guide our further search.
 
-OK HERE IS WHAT HAPPENS, BS ASIDE
-
 We specialize the type of the higher order function to the examples as much as possible.
 Since examples must be given as a concrete type, we can always specialize a our candidate higher order function. 
-How does this work exactly???
+
+\begin{lstlisting}
+specializeOn :: Type -> Type -> Type
+specializeOn concTy hoTy =
+  replaceTysIn hoTy typeMap
+  where
+    typeMap = makeTypeMap 
+                concTy 
+                (lastAsFunType hoTy)
+                Map.empty
+\end{lstlisting}
 
 Given this partially concrete type for the higher order function, we search for first order functions that will fit the component signature.
-If the first order function is a concrete instance of the component signature, we accept it as a possibility.
-This occurs when we try to use the first order function \texttt{negate::Int$\to$Int} as a component for \texttt{::a$\to$a} \markk{THIS SHOULD NEVER HAPPEN (I think), check code}.
 If the component signature is a concrete instance of the first order function, we can also accept it as a possibility.
 This occurs when we try to use \texttt{id::a->a} as a component for \texttt{::Int->Int}.
+
+Note that at this stage of synthesis, we can never have a first order function that is a concrete instance of the component signature. 
+An example of this would be trying to use \texttt{negate::Int$\to$Int} as a component for \texttt{::a$\to$a}
+Given our requirement that all type variables are determined by the uncurried input from section \ref{exampleSyntax}, we will have specialized all type variables with the \texttt{specializeOn} function.
+That means the component function must be concrete at this stage.
+This is really good for performance.
+
 
 In the case that neither of those situations hold, we try to apply a value to the first order function.
 For instance, if the component signature is \texttt{::Int->Int}, and we have the first order functions \texttt{(+)::Int->Int->Int}, we apply some initial values to \texttt{(+)} to get a new function (e.g. \texttt{(+1)}) that fits the component signature.
