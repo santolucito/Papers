@@ -29,7 +29,7 @@ value _ _ = Nothing
 As an example of how this value function is applied the higher order functions, imagine we have three map functions specialized on particular values. 
 The fully polymorphic map will score 1 point for having a function between input and out, 2 points for both having lists, and 20 points for a type variables matching a type constructor, for a total of 5 points. The mapI for Ints, will score the same, but score 20 points for each matching type constructors instead of 10 points for each type variable matched to a type constructor. The mapB for boolean value gets nothing since there is no way to reconcile that type to the example type.
 
-\begin{lstlisting}
+\begin{lstlisting}[caption=Ranking higher order function,label=horank]
 examples ::             [Int] :-> [Int]
 map  :: (a    -> b)    -> [a]    -> [b]
 mapI :: (Int  -> Int)  -> [Int]  -> [Int]

@@ -149,3 +149,13 @@ There are however repercussions to this approach. We are not guaranteed to gener
 
 
 
+\begin{lstlisting}
+specializeOn :: Type -> Type -> Type
+specializeOn concTy hoTy =
+  replaceTysIn hoTy typeMap
+  where
+    typeMap = makeTypeMap 
+                concTy 
+                (lastAsFunType hoTy)
+                Map.empty
+\end{lstlisting}

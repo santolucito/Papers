@@ -3,36 +3,24 @@
 
 With an ordered set of higher order functions, we must now find first order functions to act as the component function of the higher order function.
 To choose the component function we reuse the weighted type matching algorithm from Listing \ref{valueAlgo}.
+In order to do this, we need to know the type signature of higher order function when applied to the examples.
+By specializing the higher order function on the example type, we now know the concrete type of the component function.
+Since examples must be given as a concrete type, we can always specialize a our candidate higher order function. 
+Similar to Listing \ref{hoRank}, we show an example of how type matching is applied over first order functions in Listing \ref{compRank}.
 
+\begin{lstlisting}[caption=Ranking component function,label=comprank]
+examples ::            [Int] -> [Int]
+map ::   (a   -> b)   -> [a]   -> [b]
+mapEx :: (Int -> Int) -> [Int] -> [Int]
 
-If we have the higher order function \codeinline{map :: (a->b) -> [a] -> [b]} and the examples :: [Int] -> [Int], then our component function \codeinline{f} could have f::a->b, or f::Int->Int, or f::Int->a, but certainly not f::[Bool]->[Bool].
-
-\begin{lstlisting}
-map :: (a->b) -> [a] -> [b]
-examples :: [Int] -> [Int]
-
-componentf :: Int -> Int
-f1 :: a->b      -- value is 1
-f2 :: Int->Int  -- value is 41
-f3 :: Int->a    -- value is 21
-f4 :: [Bool]->[Bool] --value is Nothing
+component ::
+      Int    -> Int
+f1 :: a      -> b      -- value is 21
+f2 :: Int    -> a      -- value is 31
+f3 :: Int    -> Int    -- value is 41
+f4 :: [Bool] -> [Bool] -- value is Nothing
 \end{lstlisting}
 
-
-A \textit{dismantling procedure} prunes the first order function search space by using information from the top level examples, and the current state of synthesis.
-
-We specialize the type of the higher order function to the examples as much as possible. Since examples must be given as a concrete type, we can always specialize a our candidate higher order function. 
-
-\begin{lstlisting}
-specializeOn :: Type -> Type -> Type
-specializeOn concTy hoTy =
-  replaceTysIn hoTy typeMap
-  where
-    typeMap = makeTypeMap 
-                concTy 
-                (lastAsFunType hoTy)
-                Map.empty
-\end{lstlisting}
 
 Given this partially concrete type for the higher order function, we search for first order functions that will fit the component signature.
 If the component signature is a concrete instance of the first order function, we can also accept it as a possibility.
@@ -43,6 +31,8 @@ An example of this would be trying to use \codeinline{negate::Int->Int} as a com
 Given our requirement that all type variables are determined by the uncurried input from Section \ref{problem}, we will have specialized all type variables with the \codeinline{specializeOn} function.
 That means the component function must be concrete at this stage.
 This is really good for performance.
+
+A \textit{dismantling procedure} prunes the first order function search space by using information from the top level examples, and the current state of synthesis.
 
 \subsection{Initial Values}
 In the case that neither of those situations hold, we try to apply a value to the first order function.
@@ -65,7 +55,6 @@ x = 5
 Presented with the problem of finding integer values to satisfy the examples may initially seem like a good application for an SMT solver. However, keep in mind that we do not in general know what we are trying to solve - the actual use of these variables is hidden within the function definition. Since in this work we want to stick to a type directed approach, rather than code analysis, we will not be able to unravel these functions.
 
 In the implementation, we actually build new functions with the name of the composed functions, and adjust the type signature accordingly.
-
 
 Before proceeding to component function synthesis, we must also address an issue first presented in Section \ref{problem}.
 It is possible for a higher order function to need initial values in addition to a component function.
