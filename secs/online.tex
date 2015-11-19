@@ -1,102 +1,14 @@
-Once the synthesis engine has been constructed, the system is ready to answer function fitting queries. When examples are provided, the synthesis engine finds a suitable refinement type for a hypothetical function that could fit that example. Then, this refinement type is matched via builtin type-checking against the higher order functions known to the engine.
+With the synthesis engine constructed, the system is ready to answer function fitting queries. Multiple programming-by-example queries can then be answered using this engine. The synthesis engine only needs to be reconstructed when there are new library imports, or when there is a revision of the user-supplied code.
 
-Once the candidate functions are identified, a best-first search is initiated over combinations of the higher-order functions curried with each component function so that the combination type-checks. Each of these is executed against the set of inputs. Whenever a function produces the correct outputs for each input, it is said to fit, and is reported to the user. This search continues until the space is exhausted or it is manually interrupted.
+When examples are provided, the synthesis engine finds a suitable refinement type for a hypothetical function that could fit that example. Then, this refinement type is matched against the higher order functions refinement types known to the engine.
 
-As in section \ref{HORtypeInf}, we also consider two cases for examples. The first where the example input and output types match up to the top level type constructor, and the the case where the types do not match.
+Once the candidate functions are identified, a best-first search is initiated over combinations of the higher-order functions curried with each component function so that the combination type-checks. Each of these is executed against the set of inputs. Whenever a function produces the correct outputs for each input, it is said to fit, and is reported to the user. This search continues until the space is exhausted or it is manually interrupted. The search will always terminate since we are working over a finite space of generated functions, are our type reductions are strictly decreasing.
 
-In the case that the types do match, we find the set of refinement types that the examples satisfy. Generating refinement type predicates about the size of the input and output, as in section \ref{HORTypes}, we run type inference on the input / output examples to \markk{the following is wrong, what is a basic rtype anyway?} get a basic refinement type. Then, the input-output pairs are matched against a fixed set of predicates to enrich the refinement type. These predicates could impose constraints such as the input list being of equal, lesser, or greater size to the output list. \markk{end things being junk} For instance, the example set:
+% getExampleType
+% assignRType
+\input{secs/online_assign}
 
-\begin{lstlisting}
-exs = [[1,2,3,4] :-> [1,3],
-       [2,4,6,8] :-> [],
-       [5,7] :-> [5,7]]
-\end{lstlisting}
+\input{secs/online_rankByTypeMatch}
 
-\noindent would have an inferred base type \markk{this isn't inferend right now, if we want to do that we would be using ghc, not LiqHask. check http://stackoverflow.com/questions/8963488/automatically-add-type-signatures-to-top-level-functions for a script to test} of \texttt{[Int] -> [Int]} and its final refinement type would be \texttt{xs:[Int] -> \{ ys:[Int] | len xs >= len ys \}}, since all of the examples suggest that the output list does not grow. The addition of these refinement type predicates dramatically reduces the search space in practice.
-
-Once these higher order functions have been culled from the pool of candidates, we iterate through each in best-first order. For each higher-order function, we supply it with arguments until it is compatible with the type signature implied by the example set. By convention, we take the final argument of the function to be the input, which means that higher-order functions that take multiple inputs have to explicitly be uncurried. Value types are satisfied by selecting from a pool of default values, and function types are satisfied by searching for first-order functions that would make the resulting signatures match. If it is not possible to find values that fit, the search moves on to the next higher-order function.
-
-\subsubsection{Dismantling procedure}
-
-A \textit{dismantling procedure} prunes the first order function search space by using information from the top level examples, and the current state of synthesis.
-Any particular instance of deductive of reasoning can be applied to dismantle top level information.
-From the specific examples, we might deduce constraints on the component function.
-Given a candidate higher order function, we can also infer type constraints on the component function.
-In either case, we use abductive reasoning to make a guess at the function, which then guide our further search.
-
-We specialize the type of the higher order function to the examples as much as possible.
-Since examples must be given as a concrete type, we can always specialize a our candidate higher order function. 
-
-\begin{lstlisting}
-specializeOn :: Type -> Type -> Type
-specializeOn concTy hoTy =
-  replaceTysIn hoTy typeMap
-  where
-    typeMap = makeTypeMap 
-                concTy 
-                (lastAsFunType hoTy)
-                Map.empty
-\end{lstlisting}
-
-Given this partially concrete type for the higher order function, we search for first order functions that will fit the component signature.
-If the component signature is a concrete instance of the first order function, we can also accept it as a possibility.
-This occurs when we try to use \texttt{id::a->a} as a component for \texttt{::Int->Int}.
-
-Note that at this stage of synthesis, we can never have a first order function that is a concrete instance of the component signature. 
-An example of this would be trying to use \texttt{negate::Int$\to$Int} as a component for \texttt{::a$\to$a}
-Given our requirement that all type variables are determined by the uncurried input from section \ref{exampleSyntax}, we will have specialized all type variables with the \texttt{specializeOn} function.
-That means the component function must be concrete at this stage.
-This is really good for performance.
-
-
-In the case that neither of those situations hold, we try to apply a value to the first order function.
-For instance, if the component signature is \texttt{::Int->Int}, and we have the first order functions \texttt{(+)::Int->Int->Int}, we apply some initial values to \texttt{(+)} to get a new function (e.g. \texttt{(+1)}) that fits the component signature.
-
-If the initial value's type is an instance of Monoid, we can extract the unit value (named mempty in Haskell's monoid typeclass\cite{}) to use as our initial value. For lists, the unit element is []. However, there are two valid monoids for numbers, using either (+) or (*) as the operators and resulting in unit elements 0 and 1 respectively. We take both of these values (along with other useful values of -1, 2, and 3) as possibilities since the cost of testing both values is relatively small.
-
-However, requiring our users to write monoid instances for their datatypes may be a nuisance. Additionally, users may have some domain knowledge that a particular value may be useful in their application. Since our system automatically considers functions defined in the user code base, users may simply write their own specializations of the higher order functions, or provide useful initial values, to be used in synthesis. 
-
-\begin{lstlisting}
--- to use 5 as an initial value for foldl
-foldl :: (a -> b -> a) -> [b] -> a
-foldl5 f i o = foldl f 5 i o
-
--- to use 5 as an initial value in all recursions
-initVal :: Int
-initval5 = 5
-\end{lstlisting}
-
-
-In the implementation, we actually build new functions with the name of the composed functions, and adjust the type signature accordingly.
-
-
-
-%If the types of a higher order function do not match, we 
-
-
-
-To choose the component function we weighted subtyping algorithm.
-When two types have weight of >1, we will say type a \textit{generalizes} type b.
-\markk{someone probably wrote something about this, just need to find out where and cite.}
-If we have the higher order function map :: (a$\to$b) $\to$ [a] $\to$ [b] and the examples :: [Int] $\to$ [Int], then our component function f might have f::a$\to$b, or f::Int$\to$Int, or f::Int$\to$a, but certainly not f::[Bool]$\to$[Bool].
-
-The cost relation can be formalized as follows in the pseudocode for the cost function function c.
-\begin{lstlisting}
-
-c :: Type -> Type -> Maybe Int
-c (TyParen t1) (TyParen t2) =
-  fmap (1+)  c t1 t2
-c (TyFun t1 t1') (TyFun t2 t2') =
-   fmap (1+) (liftA2 (+) (c t1 t2) (c t1' t2'))
-c (TyCon q1) (TyCon q2) =
-   if (q1==q2) then Just 20 else Nothing
-c \_ \_ = Nothing
-
-\end{lstlisting}
-
-This cost function is used below.
-
-We identify two separate classes of higher order functions - those that take a single first order function, and those that need initial values in addition to a function. The \texttt{map} function only takes a first order function, while \texttt{foldl :: $(a\to b\to a)\to a\to [b]\to a$} requires an initial value for \texttt{a}. While the process described so far handles the former, initial values must also be addressed.
-
-To identify initial values in a type signature, we can use our previous assumption that all higher order function have been partially curried to the type \texttt{$\_\to *\to*$}. Adding the further assumption that only one first order function maybe be passed to the higher order function, we simply tag any non-function type in the hole as an initial value. 
+\input{secs/online_makeFxns}
 

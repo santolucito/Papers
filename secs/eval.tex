@@ -1,11 +1,12 @@
 \subsection{Soundness and Completeness}\label{sound}
 \markk{for completness, can we show that we are complete within a specific domain? See section \ref{problem}}
+, although by the inherent nature of examples synthesis cannot be complete in general, 
 
-From the procedure outlined above, it is clear that no function will be returned by the algorithm that does not fit the examples given, since functions are validated before being reported. Still, it is possible for the synthesis procedure to return a function that does not capture the user's intent. Generally, this can be solved by supplying more examples to narrow the set of possible fitting functions.
+From the procedure outlined above, it is clear that no function will be returned by the algorithm that does not fit the examples given, since functions are validated before being reported. Therefore, it is trivial to conclude that \ourTool/ is sound. Still, it is possible for the synthesis procedure to return a function that does not capture the user's intent. Generally, this can be solved by supplying more examples to narrow the set of possible fitting functions.
 
 However, depending on what the user is trying to synthesize, and which examples have been provided, it is possible for new examples to increase the search space. If, for example, a user gives only positive examples for a \texttt{filter}, the refinement type predicate discovery will assume that the lists do not change size, and will likely return \texttt{map id} as a result.
 
-On the other hand, the set of functions that the algorithm can produce is fairly broad. It is able to search through the entire space of higher order functions that have been specialized with a first-order function, when considering the functions that are in scope. We will see in section~\ref{sec:evaluation} how broad this space actually is.
+On the other hand, the set of functions that the algorithm can produce is fairly broad. It is able to search through the entire space of higher order functions that have been specialized with a first-order function, when considering the functions that are in scope. We will see in Section \ref{evaluation} how broad this space actually is. \markk{See Section \ref{solnSpace}}
 
 
 \subsection{Performance}
@@ -14,3 +15,28 @@ Here is a big table that takes up a whole page
 
 Since the standard library can be considered a relatively stable set of code, we can cache the refinement type inference to reduce the build time.
 On my machine, it removes ~20 seconds from the build time.
+
+
+Only performenign refinement type checking on functions that have the same type for input and out is a good idea. 
+Even if both type have a meausre (lists and trees), in general we have no guarantee that this is meaningful comparision.
+Since LiquidHaskell is the largest cost to our system, removing refinement type inference in these ambiguous cases provides a large performance gain.
+As an example of the performance gain, in processing the Haskell standard library, base:Prelude, there are 7 out of 30 cases of higher order functions that do not need to be checked against refinement types using this approach.
+
+\subsection{Language Support}\label{languageSupport}
+
+We have tried to avoid code analysis at every stage of this paper. However there are two points where this has fallen short. First, we must parse a file to extract the name and type information of every top level identifier. Second, using liquidHaskell as a blackbox means that we are limited by liquidHaskell's ability to deduce refinement types over functions. Our eventual goal is to create a system that can be easily ported across functional languages. Luckily, the first code dependency is small enough to handle with ease in most typed languages (the grammar of a type signature is relatively small). However LiquidHaskell is a powerful tool that would be difficult to recreate in another language. 
+
+To this end, we can extend the refinement type system by allowing refinement type inference on representative examples of a higher order function. We dont need the component to make any sense since we are only interested in size based refinement types. Take the following code.
+
+\begin{lstlisting}
+map :: (a -> b) -> [a] -> [b]
+map f [] = [] 
+map f x:xs = f x : map f xs
+
+mapExs = [[1,2,3] :-> [4,2,8]]
+ \end{lstlisting}
+
+We generate and applying many examples with QuickCheck for each higher order function.
+We then apply a similar refinement type inference strategy as in Listing \ref{exRTypeGen} to these examples.
+
+There are however repercussions to this approach. We are not guaranteed to generate a correct refinement type because we might not generate a fully representative examples. So we might prune away high order functions that are actually useful. This is future work.

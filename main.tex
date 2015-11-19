@@ -22,10 +22,8 @@
 
 
 \usepackage[usenames,dvipsnames]{color}
-\newcommand{\ruzica}[1]{\textcolor{Magenta}{\textsf{RP}: #1}}
-\newcommand{\markk}[1]{\textcolor{Blue}{\textsf{MS}: #1}}
-\newcommand{\alex}[1]{\textcolor{Orange}{\textsf{AR}: #1}}
-\newcommand{\marvin}[1]{\textcolor{Green}{\textsf{MQ}: #1}}
+
+\input{defs}
 
 
 \usepackage{comment}
@@ -105,16 +103,16 @@ We present programming by example that can utilize user defined higher order fun
 \section{Problem Formulation} \label{problem}
 \input{secs/problem}
 
-\section{Implementation}
+\section{System Overview}
 \input{secs/overview}
 
-\subsection{Offline: Synthesis Engine Construction}
+\section{Offline: Synthesis Engine Construction}
 \input{secs/offline}
 
-\subsection{Online: Fitting Functions to Examples}
+\section{Online: Fitting Functions to Examples} \label{synth}
 \input{secs/online}
 
-\section{Evaluation}
+\section{Evaluation}\label{evaluation}
 \input{secs/eval}
 
 \section{Related Work and Conclusions}\label{conclusions}

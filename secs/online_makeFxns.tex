@@ -1,0 +1,52 @@
+\subsection{Dismantling procedure}\label{makeFxns}
+% makeFxns
+
+A \textit{dismantling procedure} prunes the first order function search space by using information from the top level examples, and the current state of synthesis. Any particular instance of deductive reasoning can be applied to dismantle top level information. From the specific examples, we might deduce constraints on the component function. Given a candidate higher order function, we can also infer type constraints on the component function. In either case, we use abductive reasoning to make a guess at the function, which then guide our further search.
+
+We specialize the type of the higher order function to the examples as much as possible. Since examples must be given as a concrete type, we can always specialize a our candidate higher order function. 
+
+\begin{lstlisting}
+specializeOn :: Type -> Type -> Type
+specializeOn concTy hoTy =
+  replaceTysIn hoTy typeMap
+  where
+    typeMap = makeTypeMap 
+                concTy 
+                (lastAsFunType hoTy)
+                Map.empty
+\end{lstlisting}
+
+Given this partially concrete type for the higher order function, we search for first order functions that will fit the component signature.
+If the component signature is a concrete instance of the first order function, we can also accept it as a possibility.
+This occurs when we try to use \codeinline{id::a->a} as a component for \codeinline{::Int->Int}.
+
+Note that at this stage of synthesis, we can never have a first order function that is a concrete instance of the component signature. 
+An example of this would be trying to use \codeinline{negate::Int->Int} as a component for \codeinline{::a->a}
+Given our requirement that all type variables are determined by the uncurried input from Section \ref{problem}, we will have specialized all type variables with the \codeinline{specializeOn} function.
+That means the component function must be concrete at this stage.
+This is really good for performance.
+
+In the case that neither of those situations hold, we try to apply a value to the first order function.
+For instance, if the component signature is \codeinline{::Int->Int}, and we have the first order functions \codeinline{(+)::Int->Int->Int}, we apply some initial values to \codeinline{(+)} to get a new function (e.g. \codeinline{(+1)}) that fits the component signature.
+
+If the initial value's type is an instance of Monoid, we can extract the unit value (named mempty in Haskell's monoid typeclass\cite{}) to use as our initial value. For lists, the unit element is []. However, there are two valid monoids for numbers, using either (+) or (*) as the operators and resulting in unit elements 0 and 1 respectively. We take both of these values (along with other useful values of -1, 2, and 3) as possibilities since the cost of testing both values is relatively small.
+
+Additionally, requiring our users to write monoid instances for their datatypes may be a nuisance. However, users may have some domain knowledge that a particular value, or set of values, may be useful in their application. Since our system automatically considers functions defined in the user code base, users may simply write their own specializations of the higher order functions, or provide useful initial values, to be used in synthesis. 
+
+\begin{lstlisting}
+-- to use 5 as an initial value for foldl
+foldl :: (a -> b -> a) -> [b] -> a
+foldl5 f i o = foldl f 5 i o
+
+-- to use 5 as an initial value in all recursions
+x :: Int
+x = 5
+\end{lstlisting}
+
+Presented with the problem of finding integer values to satisfy the examples may initially seem like a good application for an SMT solver. However, keep in mind that we do not in general know what we are trying to solve - the actual use of these variables is hidden within the function definition. Since in this work we want to stick to a type directed approach, rather than code analysis, we will not be able to unravel these functions.
+
+In the implementation, we actually build new functions with the name of the composed functions, and adjust the type signature accordingly.
+
+
+
+%If the types of a higher order function do not match, we 

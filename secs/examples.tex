@@ -1,38 +1,40 @@
-A core part of the functional programming experience is writing higher order functions. The functional programming approach encourages specifying general behaviors in the form of abstract, higher-order functions first, and filling in details with first-order functions later.
-
-A core part of the functional programming experience is writing higher order functions. Many users write higher order functions first, then combine them in interesting and useful ways. Library authors often provide users with many higher order functions to allow users more easily write their applications. With this in mind, we provide a synthesis engine that is able to leverage user defined higher order functions.
-
-Since users write higher order functions with a deep understanding of the domain, using them will produce code that is more idiomatic and easier to understand then using generic higher order functions. Additionally, fewer examples are needed because we have access to the domain specific knowledge encoded by the user library. The user can also use this tool to synthesize new, simpler versions of a program. 
+As an introduction to \ourTool/, imagine that a user wants to synthesis the simple \codeinline{stutter} function that will duplicate each element of a list.
+The user will provide an example, and \ourTool/ will synthesis a program \codeinline{concatMap (replicate 2)} that fit that example.
 
 \begin{lstlisting}
--- User has their own library of fxns
-f :: a -> [a]
-f x = [x,x]
-
--- and wants to synthesize stutter
 exs :: [[Int] :-> [Int]]
 exs = [[1, 2, 3] :-> [1, 1, 2, 2, 3, 3]]
-
--- or find a more natural stutter program
-exs :: [[Int] :-> [Int]]
-exs = [[1, 2, 3] :->
-       foldl (\xs x -> xs++[x,x]) [1,2,3]]
-      
--- the system will find
-prog  = concatMap f
-prog' = concatMap (replicate 2) 
 \end{lstlisting}
 
+We might also imagine that the user was able to complete a piece of this program by writing a function \codeinline{dupl} to duplicate an element. Now \ourTool/ will provide the solution \codeinline{concatMap dupl}, as well as the solution above.
 
+\begin{lstlisting}
+dupl :: a -> [a]
+dupl x = [x,x]
+\end{lstlisting}
 
-If a user is importing a library, they can also synthesize programs that use those function. As an example, we show code to transpose a music value from the Euterpea DSL for music in haskell. The solution uses the builtin functions \texttt{mMap} (mapping over music values) and \texttt{trans :: Int->Music Pitch->Music Pitch} to transpose a Music Pitch by a value.
+Because \ourTool/ only searches for natural and idiomatic programs that use higher order functions, very few examples are needed. In this case the user wants a function that will take numbers from a list as long as the numbers are odd. Only a single example is needed for \ourTool/ to unambiguously find the function \codeinline{takeWhile odd}. Another valid function might be \codeinline{head} to take the first element. Searching for first order functions is an active research direction, but in this work we instead focus only on higher order functions. A discussion of integrating our tool with first order searching techniques in provided in Section \ref{evaluation}.
+
+\begin{lstlisting}
+exs :: [[Int] :-> [Int]]
+exs = [[1, 2, 3] :-> [1]]
+\end{lstlisting}
+
+Working on user defined datatypes is also commonplace
+
+\begin{lstlisting}
+
+\end{lstlisting}
+
+Haskell's module system and large repository of libraries like Hackage and Stackage are indispensable to a user\cite{hackage,stackage}. If a user is importing a library, \ourTool/ can also synthesize programs that use those functions and datatypes. As an example, we show code to transpose a music value from the Euterpea DSL for music\cite{Euterpea}. Among other things, Euterpea defines a tree-like datatype called \codeinline{Music} and various functions for manipulating these types. When given the examples below, \ourTool/ will synthesize the \codeinline{solution} program. The solution utilizes the functions from Euterpea; \codeinline{mMap} for mapping over music values, and \codeinline{(trans::Int->Music Pitch->Music Pitch)} to transpose a Music Pitch by a value. Without going into musical details, this is indeed a correct and sensible function. 
 
 \begin{lstlisting}
 import Euterpea
 
 exs :: [Music Pitch :-> Music Pitch]
-exs = [ (c 4 qn  :+: d 4 qn) :->
-        (ef 4 qn :+: f 4 qn) ]
+exs = [
+  (Prim (Note qn (C,4)):+:Prim (Note qn (D,4)) :->
+  (Prim (Note qn (D,4)):+:Prim (Note qn (E,4)) ]
         
-prog = mMap (trans 3)
+solution = mMap (trans 2)
 \end{lstlisting}
