@@ -49,17 +49,16 @@ These \codeinline{noRType} tagged functions can be further pruned in the synthes
 \subsection{User defined data types}
 %We focus only higher order functions that manipulate data structures
 In order to support user defined data structures, we only require that a user implements some kind of measure\cite{realWorldLiquid} over their data structure.
-This size function will help the system determine size constraints on the examples, so that we can pick higher order functions that might actually work.
-In fact, the size function could just be a constant function, resulting in every function and example satisfying the equality refinement type predicate. This means the system will test every higher-order function that fits the types.
-
-\markk{Maybe this should even be a builtin default? If liquid haskell says no def for len, just set the type to true - thats an easy hack. actually what is happening right now? test that}
+This size function will allow \lhask/ to determine size constraints on the examples, so that \ourTool/ can pick higher order functions that also satisfy those size predicates.
+In fact, the size function could just be a constant function, resulting in every function and example satisfying the equality refinement type predicate.
+This means the system will test every higher-order function that fits the types.
 
 As an example, take the code from Section \ref{examples} for synthesizing a music function.
 The user would have needed to provide a measure function for Music a.
-This measure will allow liquidHaskell to draw conclusions about the size of examples of type \codeinline{[Music a :-> Music a]}, as well as conclusions about higher order functions over the Music data structure.
-In this context one sensible measure function counts the number of notes (Prim) in the tree-like Music structure.
+This measure will allow \lhask/ to draw conclusions about the size of examples of type \codeinline{[Music a :-> Music a]}, as well as conclusions about higher order functions over the Music data structure.
+In this context, one sensible measure function counts the number of notes (Prim) in the tree-like Music structure, as shown by the \codeinline{len} function in Listing \ref{lenFxn}.
 
-\begin{lstlisting}[caption=a user defined measure over a datatype]
+\begin{lstlisting}[caption=a user defined measure over a datatype,label=lenFxn]
 import Euterpea
 
 {-@ measure len @-}

@@ -1,8 +1,15 @@
-With the synthesis engine constructed, the system is ready to answer function fitting queries. Multiple programming-by-example queries can then be answered using this engine. The synthesis engine only needs to be reconstructed when there are new library imports, or when there is a revision of the user-supplied code.
+With the synthesis engine constructed, the system is ready to synthesize programs from examples.
+Multiple programming-by-example queries can then be answered using this engine.
+The synthesis engine only needs to be reconstructed when there are new library imports, or when there is a revision of the user-supplied code.
 
-When examples are provided, the synthesis engine finds a suitable refinement type for a hypothetical function that could fit that example. Then, this refinement type is matched against the higher order functions refinement types known to the engine.
+When examples are provided, the synthesis engine finds a suitable refinement type for a hypothetical function that could fit that example.
+Then, \ourTool/ filters and ranks the higher order functions based on the refinement types known to the engine and the example types provided.
+Once the candidate higher functions are identified, \ourTool/ will select and build first order functions that match the type of the higher order function's component signature to build a final set of candidate programs.
 
-Once the candidate functions are identified, a best-first search is initiated over combinations of the higher-order functions curried with each component function so that the combination type-checks. Each of these is executed against the set of inputs. Whenever a function produces the correct outputs for each input, it is said to fit, and is reported to the user. This search continues until the space is exhausted or it is manually interrupted. The search will always terminate since we are working over a finite space of generated functions, are our type reductions are strictly decreasing.
+Each of these candidate programs is executed in best-first order against the set of inputs.
+Whenever a function produces the correct outputs for each input, it is said to fit, and is reported to the user.
+This search continues until the space is exhausted or it is manually interrupted. 
+The search will always terminate since we are working over a finite space of generated functions, are our type reductions are strictly decreasing, which we will explain in Section \ref{typeMatch}
 
 % getExampleType
 % assignRType

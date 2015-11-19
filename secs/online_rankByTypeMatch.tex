@@ -1,5 +1,14 @@
-\subsection{Type match ranking}
+\subsection{Type match ranking}\label{typeMatch}
 
+Once both the examples and higher order functions have refinement types, we can prune this set over equality.
+The example types also must be concrete versions of the input/output types of the higher order function.
+For type A to be a concrete version of type B, there must exist some type C (possibly equal to type B), such that both A and B can be instantiated to that type.
+\markk{Alex fix this for me.}
+
+\begin{lstlisting}[caption=Pruning based on types,label=costAlgo]
+filter (exRType ==) higherOrderRTypes
+filter (exType `isConcreteTypeOf') higherOrderComponentTypes
+\end{lstlisting}
 
 %filter on RType and rank
 
