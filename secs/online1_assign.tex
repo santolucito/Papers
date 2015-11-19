@@ -3,19 +3,20 @@
 As in Section \ref{HORtypeInf}, we also consider two cases for examples. The first, where the example input and output types match up to the top level type constructor, and the the case where the types do not match.
 
 % assignRType
-In the case that the types do match, we find the set of refinement types that the examples satisfy. Generating refinement type predicates about the size of the input and output, as in Section \ref{HORtypeInf}, we apply the same algorithm from Listing \ref{listing:addRType}. For instance, the example set:
+In the case that the types do match, we find the set of refinement types that the examples satisfy. Generating refinement type predicates about the size of the input and output, as in Section \ref{HORtypeInf}, we apply the same algorithm from Listing \ref{listing:addRType}. 
+For instance, an example set for \codeinline{filter (>3)} might look as follows:
 
 \begin{lstlisting}[caption=Refinement type inference for examples,label=exRTypeGen]
 ex :: [Int] :-> [Int]
-ex = [[1,2,3,4] :-> [1,3],
-       [2,4,6,8] :-> [],
-       [5,7] :-> [5,7]]
+ex = [[1,2,3] :-> [1,2,3],
+      [1,3,4] :-> [1,3],
+      [4,6,8] :-> []]
        
 exRType ::
   inExs :[Int] :-> 
- {outExs:[Int] | len inExs >= len outExs }
+ {outExs:[Int] | len inExs <= len outExs }
 \end{lstlisting}
 
-\noindent would have the final refinement type of \codeinline{exsR}, since all of the examples suggest that the output list does not grow. 
+\noindent and have the final refinement type of \codeinline{exRType}, since all of the examples suggest that the output list does not grow. 
 Again, when the types do not match we assign the \codeinline{noRType} flag to the examples, as we did for higher order functions in Listing \ref{listing:addRType}.
 We can now reduce our search space to only higher order functions with the same refinement type that matches the examples' refinement type. 

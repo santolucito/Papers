@@ -1,7 +1,25 @@
-\subsection{Dismantling procedure}\label{makeFxns}
+\subsection{Component function generation}\label{makeFxns}
 % makeFxns
 
-A \textit{dismantling procedure} prunes the first order function search space by using information from the top level examples, and the current state of synthesis. Any particular instance of deductive reasoning can be applied to dismantle top level information. From the specific examples, we might deduce constraints on the component function. Given a candidate higher order function, we can also infer type constraints on the component function. In either case, we use abductive reasoning to make a guess at the function, which then guide our further search.
+With an ordered set of higher order functions, we must now find first order functions to act as the component function of the higher order function.
+To choose the component function we reuse the weighted type matching algorithm from Listing \ref{valueAlgo}.
+
+
+If we have the higher order function \codeinline{map :: (a->b) -> [a] -> [b]} and the examples :: [Int] -> [Int], then our component function \codeinline{f} could have f::a->b, or f::Int->Int, or f::Int->a, but certainly not f::[Bool]->[Bool].
+
+\begin{lstlisting}
+map :: (a->b) -> [a] -> [b]
+examples :: [Int] -> [Int]
+
+componentf :: Int -> Int
+f1 :: a->b      -- value is 1
+f2 :: Int->Int  -- value is 41
+f3 :: Int->a    -- value is 21
+f4 :: [Bool]->[Bool] --value is Nothing
+\end{lstlisting}
+
+
+A \textit{dismantling procedure} prunes the first order function search space by using information from the top level examples, and the current state of synthesis.
 
 We specialize the type of the higher order function to the examples as much as possible. Since examples must be given as a concrete type, we can always specialize a our candidate higher order function. 
 
@@ -26,10 +44,11 @@ Given our requirement that all type variables are determined by the uncurried in
 That means the component function must be concrete at this stage.
 This is really good for performance.
 
+\subsection{Initial Values}
 In the case that neither of those situations hold, we try to apply a value to the first order function.
 For instance, if the component signature is \codeinline{::Int->Int}, and we have the first order functions \codeinline{(+)::Int->Int->Int}, we apply some initial values to \codeinline{(+)} to get a new function (e.g. \codeinline{(+1)}) that fits the component signature.
 
-If the initial value's type is an instance of Monoid, we can extract the unit value (named mempty in Haskell's monoid typeclass\cite{}) to use as our initial value. For lists, the unit element is []. However, there are two valid monoids for numbers, using either (+) or (*) as the operators and resulting in unit elements 0 and 1 respectively. We take both of these values (along with other useful values of -1, 2, and 3) as possibilities since the cost of testing both values is relatively small.
+If the initial value's type is an instance of Monoid, we can extract the unit value (named mempty in Haskell's monoid typeclass\cite{monoid}) to use as our initial value. For lists, the unit element is []. However, there are two valid monoids for numbers, using either (+) or (*) as the operators and resulting in unit elements 0 and 1 respectively. We take both of these values (along with other common, useful values of -1, and 2) as possibilities since the cost of testing both values is relatively small.
 
 Additionally, requiring our users to write monoid instances for their datatypes may be a nuisance. However, users may have some domain knowledge that a particular value, or set of values, may be useful in their application. Since our system automatically considers functions defined in the user code base, users may simply write their own specializations of the higher order functions, or provide useful initial values, to be used in synthesis. 
 
@@ -46,6 +65,16 @@ x = 5
 Presented with the problem of finding integer values to satisfy the examples may initially seem like a good application for an SMT solver. However, keep in mind that we do not in general know what we are trying to solve - the actual use of these variables is hidden within the function definition. Since in this work we want to stick to a type directed approach, rather than code analysis, we will not be able to unravel these functions.
 
 In the implementation, we actually build new functions with the name of the composed functions, and adjust the type signature accordingly.
+
+
+Before proceeding to component function synthesis, we must also address an issue first presented in Section \ref{problem}.
+It is possible for a higher order function to need initial values in addition to a component function.
+For example, the \codeinline{map} function only takes a first order function, while \codeinline{foldl :: (a-> b-> a)-> a-> [b]-> a} requires an initial value for \codeinline{a}.
+While the process described so far handles the former, initial values must also be addressed.
+
+For each higher-order function, we supply it with arguments until it is compatible with the type signature implied by the example set. In accordance with our problem definition in Section \ref{problem}, we can assume the final argument of the function is the input. Any other initial value types are satisfied by selecting from a pool of default values, and function types are satisfied by searching for first-order functions that would make the resulting signatures match. If it is not possible to find values that fit, the search moves on to the next higher-order function.
+
+To identify initial values in a type signature, we can use our previous assumption that all higher order function have been partially curried to the type \codeinline{_ -> *-> *}. Adding the further assumption that only one first order function maybe be passed to the higher order function, we simply tag any non-function type in the hole as an initial value.
 
 
 

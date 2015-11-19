@@ -6,6 +6,20 @@ With the eventual goal of building a complete program synthesis engine, we will 
 
 The user must provide a concrete type signature for the examples. This could be fixed by making use of Haskell's monomorphism restriction and inline the inferred concrete type signature.
 
+In providing initial values for component functions, we are strictly reducing the number of kinds in a type signature.
+We could expand types, which would create an infinite recursion, but allow us to find many more functions.
+
+\begin{lstlisting}
+--given the component function
+f :: Int -> Int
+f = (+1)
+--expand the type
+f' :: Int -> Int
+f' = f . (+1)
+
+\end{lstlisting}
+
+
 \subsection{Optimizations}
 
 \subsection{Related}

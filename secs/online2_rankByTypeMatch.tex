@@ -1,0 +1,41 @@
+\subsection{Type match ranking}\label{typeMatch}
+
+Once both the examples and higher order functions have refinement types, we can prune this set over equality.
+The example types also must be concrete versions of the input/output types of the higher order function.
+For type A to be a concrete version of type B, there must exist some type C (possibly equal to type B), such that both A and B can be instantiated to that type.
+
+\begin{lstlisting}[caption=Pruning based on types]
+filter (exRType ==) higherOrderRTypes
+filter (exType `isConcreteTypeOf') higherOrderComponentTypes
+\end{lstlisting}
+
+Once these higher order functions have been culled from the pool of candidates, we update their ranks that had been assigned in Section \ref{HORtypeInf} from code locality.
+The higher order function can advance in the ranking by using a value function to find out exactly how much the example type \codeinline{isConcreteTypeOf} to the input/output types of candidate higher order function.
+
+In Listing \ref{valueAlgo}, we present a demonstration of part of this ranking algorithm.
+As we traverse the tree structure of the type, the more pieces of the type signature that match, the higher the value of that match. 
+However, if there is a type constructor mismatch, the two types can never be reconciled, and the entire value gets nothing.
+
+\begin{lstlisting}[caption=Type closeness ranking algorithm (sample),label=valueAlgo]
+value :: Type -> Type -> Maybe Int
+value (TyFun i1 o1) (TyFun i2 o2) =
+   1 + (value i1 i2) + (value o1 o2)
+value (TyCon n1) (TyCon n2) =
+   if (n1==n2) then 20 else Nothing
+value (TyCon n1) (TyVar _) = 10
+value _ _ = Nothing
+\end{lstlisting}
+
+As an example of how this value function is applied the higher order functions, imagine we have three map functions specialized on particular values. 
+The fully polymorphic map will score 1 point for having a function between input and out, 2 points for both having lists, and 20 points for a type variables matching a type constructor, for a total of 5 points. The mapI for Ints, will score the same, but score 20 points for each matching type constructors instead of 10 points for each type variable matched to a type constructor. The mapB for boolean value gets nothing since there is no way to reconcile that type to the example type.
+
+\begin{lstlisting}
+examples ::             [Int] :-> [Int]
+map  :: (a    -> b)    -> [a]    -> [b]
+mapI :: (Int  -> Int)  -> [Int]  -> [Int]
+mapB :: (Bool -> Bool) -> [Bool] -> [Bool]
+
+-- map  scores 5
+-- mapI scores 43
+-- mapB scores Nothing
+\end{lstlisting}
