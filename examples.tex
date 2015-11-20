@@ -21,14 +21,14 @@ dupl x = [x,x]
 \end{lstlisting}
 
 In the next example the user would like to synthesize a function that takes numbers from a list as long as the numbers are odd.
-Again, only a single example is needed for \ourTool/ to unambiguously find  simple solution program, \codeinline{takeWhile odd}, using functions the from the standard library; \codeinline{takeWhile :: (a -> Bool) -> [a] -> [a]} and \codeinline{odd :: Int -> Bool} . 
+Again, only a single example is needed for \ourTool/ to unambiguously find  simple solution program, \codeinline{takeWhile odd}, using functions the from the standard library; \codeinline{takeWhile :: (a -> Bool) -> [a] -> [a]} to recurse over a list and take items until the predicate is false and \codeinline{odd :: Int -> Bool}. 
 
 \begin{lstlisting}
 exs :: [[Int] :-> [Int]]
 exs = [[1, 2, 3] :-> [1]]
 \end{lstlisting}
 
-Another correct solution for this example might be \codeinline{head} to take the first element. Searching for first order functions is an active research direction \cite{DBLP:conf/aaip/Katayama09, flashFillPOPL}, but in this work we are focused only on higher order functions. A discussion of integrating our tool with first order searching techniques in provided in Section \ref{evaluation}.
+Another correct solution for this example might be \codeinline{head} to take the first element. Searching for first order functions is an active research direction \cite{DBLP:conf/aaip/Katayama09, flashFillPOPL}, but in this work we are focused only on higher order functions. This is part because the goal of natural synthesis is to provide useful, nontrivial functions to users. A discussion of integrating our tool with first order searching techniques in provided in Section \ref{evaluation}.
 
 \subsection{Synthesis with user defined values}
 
