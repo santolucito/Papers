@@ -12,7 +12,7 @@ exs :: [[Int] :-> [Int]]
 exs = [[1, 2, 3] :-> [1, 1, 2, 2, 3, 3]]
 \end{lstlisting}
 
-If, in addition, the user develops a function \codeinline{dupl} which duplicates an element (see below), then \ourTool/ will provide the solution \codeinline{concatMap dupl}, as well as the solution listed above. \ourTool/ will rank solution programs that contains user defined functions above others. Ranks are calculated throughout algorithm, continually being updated as we derive new information.
+If, in addition, the user develops a function \codeinline{dupl} which duplicates an element (see below), then \ourTool/ will provide the solution \codeinline{concatMap dupl}, as well as the solution listed above. \ourTool/ will rank solution programs that contains user defined functions above others, so this one will be reported earlier. Ranks are calculated throughout the algorithm, continually being updated as we derive new information.
 
 \begin{lstlisting}
 dupl :: a -> [a]
