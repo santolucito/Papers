@@ -1,32 +1,35 @@
 \subsection{Soundness and Completeness}\label{sound}
-\markk{for completness, can we show that we are complete within a specific domain? See section \ref{problem}}
-, although by the inherent nature of examples synthesis cannot be complete in general, 
 
-From the procedure outlined above, it is clear that no function will be returned by the algorithm that does not fit the examples given, since functions are validated before being reported. Therefore, it is trivial to conclude that \ourTool/ is sound. Still, it is possible for the synthesis procedure to return a function that does not capture the user's intent. Generally, this can be solved by supplying more examples to narrow the set of possible fitting functions.
+It is clear that no function will be returned by the algorithm that does not fit the examples given, since functions are validated before being reported. 
+Therefore, it is trivial to conclude that \ourTool/ is sound over the given examples.
+Still, it is possible for the synthesis procedure to return a function that does not capture the user's intent - that is, as with any programming by examples system, \ourTool/ is not sound over the user intent.
+Generally, this ambiguity can be resolved by the user supplying more examples to narrow the set of possible fitting functions.
+However, depending on what the user is trying to synthesize, and which examples have been provided, it is possible for new examples to increase the internal search space. 
+If, for example, a user gives only positive examples for a \texttt{filter}, the refinement type predicate discovery will assume that the lists do not change size, and will likely return \texttt{map id} as a result.
 
-However, depending on what the user is trying to synthesize, and which examples have been provided, it is possible for new examples to increase the search space. If, for example, a user gives only positive examples for a \texttt{filter}, the refinement type predicate discovery will assume that the lists do not change size, and will likely return \texttt{map id} as a result.
-
-On the other hand, the set of functions that the algorithm can produce is fairly broad. It is able to search through the entire space of higher order functions that have been specialized with a first-order function, when considering the functions that are in scope. We will see in Section \ref{evaluation} how broad this space actually is. \markk{See Section \ref{solnSpace}}
+The completeness claim we might like to make is that over the solution space defined in Section \ref{problem}, we will always find a solution if it exists.
+Since our space is finite, completeness can be made trivially true by replacing all instances of pruning with a zero ranking, so that our algorithm now is only a best-first enumerative search.
+Because we make some decisions in pruning that removes potentially sound functions, such as using the \codeinline{noRType} tag in Section \ref{HORtypeInf} we trade this completeness for performance.
+In Section \ref{sec:related}, we will discuss why, even if we had completeness, it should be sacrificed in future work.
+%On the other hand, the set of functions that the algorithm can produce is fairly broad. It is able to search through the entire space of higher order functions that have been specialized with a first-order function, when considering the functions that are in scope. We will see in Section \ref{evaluation} how broad this space actually is. \markk{See Section \ref{solnSpace}}
 
 
 \subsection{Performance}
 
 Here is a big table that takes up a whole page
 
-Since the standard library can be considered a relatively stable set of code, we can cache the refinement type inference to reduce the build time.
-On my machine, it removes ~20 seconds from the build time.
+Since the standard library can be considered a relatively stable set of code, we could cache the refinement type inference to reduce the build time.
 
-
-Only performing refinement type checking on functions that have the same type for input and out is a good idea. 
-Even if both type have a measure (lists and trees), in general we have no guarantee that this is meaningful comparison.
-Since \lhask/ is the largest cost to our system, removing refinement type inference in these ambiguous cases provides a large performance gain.
-As an example of the performance gain, in processing the Haskell standard library, base:Prelude, there are 7 out of 30 cases of higher order functions that do not need to be checked against refinement types using this approach.
+In Section \ref{HORtypeInf} we discuss using type matching and the \codeinline{noRType} tag to reduce the number of refinement type inferences we must make. 
+Recall that even if both type have a measure (lists and trees), in general we have no guarantee that this is meaningful comparison.
+Since \lhask/ is the largest cost to our system in the offline stage, removing refinement type inference in these ambiguous cases provides a large performance gain.
+As an example, in processing the Haskell standard library \codeinline{base:Prelude}, there are 7 out of 30 cases of higher order functions that do not need to be checked against refinement types using this approach.
 
 \subsection{Example Generation}\label{languageSupport}
 
 We have tried to avoid code analysis at every stage of this paper. However there are two points where this has fallen short. First, we must parse a file to extract the name and type information of every top level identifier. Second, using \lhask/ as a blackbox means that we are limited by \lhask/'s ability to deduce refinement types over functions. Our eventual goal is to create a system that can be easily ported across functional languages. Luckily, the first code dependency is small enough to handle with ease in most typed languages (the grammar of a type signature is relatively small). However \lhask/ is a powerful tool that would be difficult to recreate in another language. 
 
-To this end, we can extend the refinement type system by allowing refinement type inference on representative examples of a higher order function. We dont need the component to make any sense since we are only interested in size based refinement types. Take the following code.
+To this end, we can extend the refinement type system by allowing refinement type inference on representative examples of a higher order function. We do not need the component to make any sense since we are only interested in size based refinement types. Take the following code.
 
 \begin{lstlisting}
 map :: (a -> b) -> [a] -> [b]

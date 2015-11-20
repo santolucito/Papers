@@ -25,10 +25,10 @@ To this end we could also enable non-reducing types reducing applications, which
 Rather than supplying values to functions, we could supply more functions.
 
 \begin{lstlisting}
---given the component function
+-- given a component function
 f :: Int -> Int
 f = (+1)
---expand the type
+-- `apply' a function rather than a value
 f' :: Int -> Int
 f' = f . (+2)
 

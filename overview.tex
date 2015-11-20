@@ -43,8 +43,7 @@ Once this stage is complete, the user can examples to the synthesis engine, whic
 
 Once the candidate higher order functions have been chosen, the synthesis engine performs a best-first search for a program that fits all of the input and output examples by composing the candidates with first-order functions. For example, the higher-order function \texttt{map} might be supplied the \texttt{length} function if the example inputs are lists of lists of integers and the output examples are all lists of integers. The programs that are examined during the search are evaluated against the example set and are reported to the user as they match. Because the weights favor local declarations, the highest-ranked programs are likely to be the most idiomatic.
 
-\markk{explain each of these lines in the rest of the paper, citing line numbers. once all of the lines are covered here we are done}
- We will explain each line of this in the proceeding Sections.
+We present a pseudocode algorithm here which we will use as a roadmap for the rest of the paper, explaining each line in the proceeding sections. For the remainder of the paper, code samples are taken from the implementation, and modified slightly to elide the details of managing Haskell's type system.
  
 \begin{lstlisting}[caption=A pseudocode representation of the build and synthesis stages of the synthesis algorithm, label=listing:Algo]
 main = do
