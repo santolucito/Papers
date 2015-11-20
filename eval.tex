@@ -18,28 +18,28 @@ In Section \ref{sec:related}, we will discuss why, even if we had completeness, 
 
 \begin{table*}[t]
   \centering
-  \begin{tabular}{|lllll|}
-     & any (odd)        & 4.07   &  &  \\
+  \begin{tabular}{|c|l|l|l|l|}
     \hline
-
-     & all (even)       & 1.93   &  &  \\
-     \hline
+    & Test Name & Runtime & Imports & Generated Function \\
+    \hline
+    \parbox[t]{2mm}{\multirow{3}{*}{\rotatebox[origin=c]{90}{Bool}}}
+    & and & 4.07 &  &  \\
+    & or  & 1.93 &  &  \\
+    & xor & 8.96 &  &  \\
+    \hline
     
-     & takeWhile (odd)  & 8.96   &  &  \\
-     \hline
-    
-     & map (not)        & 7.06   &  &  \\
-     \hline
+    & map (not)        & 7.06   &  &  \\
+    \hline
     
     or  & any (id)      & 3.72   &  &  \\
         & foldl1 (max)  & 4.37   &  &  \\
         & foldr1 (max)  & 4.45   &  &  \\
-     \hline
+    \hline
     
     and & all (id)      & 2.36   &  &  \\
         & foldl1 (min)  & 4.53   &  &  \\
         & foldr1 (min)  & 4.57   &  &  \\
-     \hline
+    \hline
     
     and & foldl  (add) (0)   & 1.68   &  &  \\
         & foldl' (add) (0)   & 7.56   &  &  \\
