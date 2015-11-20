@@ -18,44 +18,46 @@ In Section \ref{sec:related}, we will discuss why, even if we had completeness, 
 
 \begin{table*}[t]
   \centering
-  \begin{tabular}{|c|l|c|l|l|l|}
+  \bgroup
+  \def\arraystretch{1.1}
+  \begin{tabular}{|c|l|c|l|l|l|l|}
     \hline
-    & Name & Time (s) & Imports & Example & Generated Function \\
+    & Name & Time (s) & Imports & \# & Representative Example & Generated Function \\
     \hline
     \parbox[t]{2mm}{\multirow{4}{*}{\rotatebox[origin=c]{90}{Bool}}}
-    & and & 2.02 & Prelude & [True, False] $:\to$ False & all id \\
-    & and-2 & 5.52 & Prelude & [True, False] $:\to$ False & foldl min True \\
-    & or  & 3.95 & Prelude & [True, False] $:\to$ True & any id \\
-    & xor & 5.59 & Prelude & [True, False, True] $:\to$ False & foldl xor False \\
+    & and & 2.02 & None & 3 & [True, False] $:\to$ False & all id \\
+    & and-2 & 5.52 & None & 3 & [True, False] $:\to$ False & foldl min True \\
+    & or  & 3.95 & None & 4 & [True, False] $:\to$ True & any id \\
+    & xor & 5.59 & None & 4 & [True, False, True] $:\to$ False & foldl xor False \\
     \hline
     
     \parbox[t]{2mm}{\multirow{4}{*}{\rotatebox[origin=c]{90}{Tree (u.d.)}}}
-    & double vals & 3.35 & Prelude & ((1) 3 (2)) $:\to$ ((2) 6 (4)) & mapBTree (*2) \\
-    & tree id & 2.49 & Prelude & ((1) 3 ((4) 5 (6))) $:\to$ ((1) 3 ((4) 5 (6))) & mapBTree id \\
-    & tree max & 2.95 & Prelude & ((1 10) 5) $:\to$ 10 & accumTree max 0 \\
-    & tree sum & 2.93 & Prelude & ((3 1) 2) $:\to$ 6 & accumTree (+) 0 \\
+    & double vals & 3.35 & None & 1 & ((1) 3 (2)) $:\to$ ((2) 6 (4)) & mapBTree (*2) \\
+    & tree id & 2.49 & None & 1 & ((1) 3 ((4) 5 (6))) $:\to$ ((1) 3 ((4) 5 (6))) & mapBTree id \\
+    & tree max & 2.95 & None & 3 & ((1 10) 5) $:\to$ 10 & accumTree max 0 \\
+    & tree sum & 2.93 & None & 1 & ((3 1) 2) $:\to$ 6 & accumTree (+) 0 \\
     \hline
     
-    \parbox[t]{2mm}{\multirow{10}{*}{\rotatebox[origin=c]{90}{List}}}
-    &  & 0.00 & Prelude, Data.List & [] $:\to$ [] & \\
-    &  & 0.00 & Prelude, Data.List & [] $:\to$ [] & \\
-    &  & 0.00 & Prelude, Data.List & [] $:\to$ [] & \\
-    &  & 0.00 & Prelude, Data.List & [] $:\to$ [] & \\
-    &  & 0.00 & Prelude, Data.List & [] $:\to$ [] & \\
-    &  & 0.00 & Prelude, Data.List & [] $:\to$ [] & \\
-    &  & 0.00 & Prelude, Data.List & [] $:\to$ [] & \\
-    &  & 0.00 & Prelude, Data.List & [] $:\to$ [] & \\
-    &  & 0.00 & Prelude, Data.List & [] $:\to$ [] & \\
-    &  & 0.00 & Prelude, Data.List & [] $:\to$ [] & \\
+    \parbox[t]{2mm}{\multirow{9}{*}{\rotatebox[origin=c]{90}{List}}}
+    & all even & 2.02 & Data.List & 4 & [2,4,6,8] $:\to$ True & all even \\
+    & some odd & 4.70 & Data.List & 3 & [1,4,5,6] $:\to$ True & any odd \\
+    & custom filter & 11.88 & Data.List & 3 & [1,2,3,4,5] $:\to$ [3,4,5] & filter user\_pred \\
+    & length & 1.20 & Data.List & 3 & [5,6,7,8] $:\to$ 4 & foldl count 0 \\
+    & max elem & 2.91 & Data.List & 3 & [4,10,7] $:\to$ 10 & foldl max 0 \\
+    & negate all & 7.48 & Data.List & 1 & [True, False, True] $:\to$ [False, True, False] & map not \\
+    & odd prefix & 8.77 & Data.List & 1 & [1,3,4,6,7] $:\to$ [1,3] & takeWhile odd \\
+    & stutter & 3.02 & Data.List & 1 & [1,2,3] $:\to$ [1,1,2,2,3,3] & concatMap (replicate 2) \\
+    & sum ints & 4.64 & Data.List & 1 & [1,2,3,4] $:\to$ 10 & foldl (+) 0 \\
     \hline
     
     \parbox[t]{2mm}{\multirow{4}{*}{\rotatebox[origin=c]{90}{Etc.}}}
-    &  & 0.00 & Prelude, Data.Map & [] $:\to$ [] & \\
-    &  & 0.00 & Prelude, Euterpea & [] $:\to$ [] & \\
-    &  & 0.00 & Prelude, Euterpea & [] $:\to$ [] & \\
+    & set sum & 1.83 & Data.Map & 1 & \{ 1, 2, 3, 4 \} $:\to$ 10 & Data.Map.foldl (+) 0 \\
+    & music id & 7.47 & Euterpea & 1 & C\# $:\to$ C\# & mMap id \\
+    & transpose score & 5.15 & Euterpea & 1 & A $:\to$ B & mMap (trans 2) \\
     \hline
   \end{tabular}
-  \caption{Benchmarks and Performance Measures}
+  \egroup
+  \caption{Benchmarks and Performance Measures. This table lists all 20 benchmarks, grouped by data structure. Each benchmark lists its name, the amount of time it took to synthesize, the extra imports it uses, the number of examples needed to synthesize, one representative example, and the synthesized function itself.}
   \label{tab:benchmarks}
 \end{table*}
 
@@ -85,7 +87,7 @@ Our current example generation tool uses QuickCheck to generate and apply many e
 Of course, since \lhask/ supports so much of Haskell, this is not practically useful for us, but provides a prototype as a proof of concept.
 Imagining that we could not find a refinement type directly on map, we might use examples to infer a refinement type. Take the following code:
 
-\begin{lstlisting}
+\begin{lstlisting}[numbers=none]
 map :: (a -> b) -> [a] -> [b]
 map f [] = [] 
 map f x:xs = f x : map f xs

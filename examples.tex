@@ -1,50 +1,38 @@
 \section{Motivating Examples} 
 \label{examples}
 
-\subsection{Synthesis using ???}
+\subsection{Synthesis with the standard library}
 
 As an introduction to \ourTool/, imagine that a user wants to synthesis the simple \codeinline{stutter} \cite{Osera:2015} function which duplicates each element of a list.
-
-\ruzica{add here two functions in the standard library, list them and explain}
-
-The user provides a single example, and \ourTool/ automatically synthesis a program \codeinline{concatMap (replicate 2)} that fit that example.
+While in MYTH~\cite{Osera:2015} the focus was on lists as inductively defined data types, we are focusing on using the built in representation of a list in Haskell.
+Haskell provides two relevant functions for this task in the standard library - \codeinline{concatMap} which applies a function over a list and concatenates the result, and \codeinline{replicate n} which will replicate an item n times into a list.
+When working over the inductively defined list data type, MYTH requires three examples to find an appropriate function. Using \ourTool/, the user only needs to provides a single example to synthesize the program \codeinline{concatMap (replicate 2)} that fits that example on Haskell's builtin list type.
 
 \begin{lstlisting}
 exs :: [[Int] :-> [Int]]
 exs = [[1, 2, 3] :-> [1, 1, 2, 2, 3, 3]]
 \end{lstlisting}
 
-If, in addition, the user develops her own function \codeinline{dupl} which duplicates an element (see below), then \ourTool/ will provide the solution \codeinline{concatMap dupl}, as well as the solution listed above.
+If, in addition, the user develops a function \codeinline{dupl} which duplicates an element (see below), then \ourTool/ will provide the solution \codeinline{concatMap dupl}, as well as the solution listed above.
 
 \begin{lstlisting}
 dupl :: a -> [a]
 dupl x = [x,x]
 \end{lstlisting}
 
-Because \ourTool/ synthesizes programs that use higher order functions, in general very few examples are needed. 
-
-
-\subsection{Again some name}
-
-In the next example the user would like to synthesize a function that takes numbers from a list as long as the numbers are odd. 
+In the next example the user would like to synthesize a function that takes numbers from a list as long as the numbers are odd.
+Again, only a single example is needed for \ourTool/ to unambiguously find  simple solution program, \codeinline{takeWhile odd}, using functions from the standard library. 
 
 \begin{lstlisting}
 exs :: [[Int] :-> [Int]]
 exs = [[1, 2, 3] :-> [1]]
 \end{lstlisting}
 
-Only a single example is needed for \ourTool/ to unambiguously find the function \codeinline{takeWhile odd}.
+Another correct solution for this example might be \codeinline{head} to take the first element. Searching for first order functions is an active research direction \cite{DBLP:conf/aaip/Katayama09, flashFillPOPL}, but in this work we are focused only on higher order functions. A discussion of integrating our tool with first order searching techniques in provided in Section \ref{evaluation}.
 
-\ruzica{ describe takeWhile and odd}
+\subsection{Synthesis with user defined values}
 
-Another correct solution for this example might be \codeinline{head} to take the first element. Searching for first order functions is an active research direction \cite{Osera:2015, Osera:2016, Feser:2015}, but in this work we are focused only on higher order functions. A discussion of integrating our tool with first order searching techniques in provided in Section \ref{evaluation}.
-
-\subsection{Synthesis using user defined datatypes}
-
-Working on user defined datatypes is also a commonplace task \ourTool/ supports. In the next example the user has provided a binary tree data structure and a function to map over it. For the sack of brevity, we show the synthesis the exceedingly simple program \codeinline{mapBTree not}.
-
-\ruzica{???? what is the goal here?}
-
+Working on a set of user defined code is also a critical task \ourTool/ supports. In the next example the user has provided a binary tree data structure and a higher order function to map over it. We show the synthesis of the exceedingly (for the sake of brevity) simple program \codeinline{mapBTree not}. Doing such synthesis requires automatic reasoning about not only the user defined polymorphic data type, but also the higher order function they have defined over it.
 
 \begin{lstlisting}
 data BTree a = Nil |
@@ -67,12 +55,13 @@ Often, a user is importing a library that is large, unfamiliar, and/or poorly do
 Using \ourTool/, the user no longer needs an intimate knowledge of the library to makes use of the functions and datatypes, and can instead synthesize functions from examples.
 
 
-\subsection{Synthesis ... DSL,...}
+\subsection{Synthesis with a DSL}
 
-As an example, we show code to transpose a music value from the Euterpea DSL for music\cite{euterpea}.
+As an example, we show code to transpose a music value from the Euterpea DSL (domain specific library) for music\cite{euterpea}.
 Among other things, Euterpea defines a tree-like datatype called \codeinline{Music} and various functions for manipulating these types.
 The user only needs to express the basic datatype as examples, and \ourTool/ can synthesize the \codeinline{solution} program.
 The solution utilizes the functions from Euterpea; \codeinline{mMap} for mapping over music values, and \codeinline{(trans::Int->Music Pitch->Music Pitch)} to transpose a Music Pitch by a value.
+This again requires automated reasoning about the properties of the library's data types and higher order functions.
 Because we have synthesized a natural looking program, the user does not need to understand details of the library's function and data structures to be able to immediately gain an intuition about how the solution program works.
 
 \begin{lstlisting}
