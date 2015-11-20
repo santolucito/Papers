@@ -22,6 +22,8 @@ Program synthesis does not inherently address the problem of code readability, o
 Our goal is to synthesize code that can be naturally integrated into code written by a programmer.
 In this paper we introduce an approach called \textit{natural synthesis} that reaches beyond the goal of synthesizing correct code, and synthesizes code from examples that is natural and idiomatic to the language.
 
+Natural synthesis is the task of synthesizing programs from specification, with the explicit purpose of finding programs that are not only correct to the specification, but also comprehensible. The ideal natural synthesis procedure could pass something of a Turing test for writing code. A human inspecting the generated code should be able to understand it as easily as human written code.
+
 Take the simple task of synthesizing a list flattening function from examples. 
 Synthesis approaches that use only the primitive recursive operators~\cite{Osera:2015,FeserCD15}, would find a function similar to \codeinline{solution1} in Listing \ref{natSyn}.
 Our tool instead focuses on actually utilizing these library functions (solution2).
