@@ -50,21 +50,11 @@ Since users write higher order functions with a deep understanding of the domain
 
 In order to facilitate synthesis over generic higher order functions, we run the synthesis algorithm in two stages. 
 The first offline preprocessing stage infers rules about how the user's higher order functions behave over their input and output types.
-We encode these rules using refinement types in Haskell with the \lhask/ tool\cite{DBLP:conf/haskell/VazouSJ14}.
+We encode these rules using refinement types in Haskell with the \lhask/ tool~\cite{DBLP:conf/haskell/VazouSJ14}.
 Refinement types allow us to specify a stronger type signature by adding predicates about various properties of the types.
-In this work we only utilize the ability of refinement types to make judgements on the sizes input and output type, to be explained in more detail in Section \ref{HORtypeInf}.
+In this work we only utilize the ability of refinement types to make judgments on the sizes input and output type, to be explained in more detail in Section \ref{HORtypeInf}.
 These refinement types can then be utilized in the online synthesis stage, along with various type matching, ranking, and unification algorithms to efficiently prune and navigate the search space of solution programs.
-We will show in our evaluation the small number of examples needed to synthesize clear and concise solution programs.
-
-In Listing \ref{natSyn}, we have already seen the potential to synthesize natural solutions to programming by example queries.
-However, any good synthesis engine will also be able to synthesize novel and unexpected solutions to problems. 
-Since the stated goal is to find simple programs that a human might write, this raises the question if natural synthesis and novel synthesis are at odds with each other.
-
-In our results we have seen that this is not the case 
-For example, natural synthesis of the Boolean ``or'' function would return two function, \codeinline{any (id)} and \codeinline{foldr1 (max)}.
-The \codeinline{any (id)} solution would expected by Haskell programmer, where \codeinline{any:: (a-> Bool) -> [a] -> Bool)} is a built-in function to Haskell that returns \codeinline{True} if any element of a list satisfies the predicate function. 
-The more novel solution returned by our natural synthesis is \codeinline{foldr1 (max)}, where \codeinline{max :: Ord a => a -> a -> a} will return the maximum element of the two inputs.
-By folding over the list, this solution program exploits the \codeinline{Enum} property of the Boolean type in Haskell in a way that provides insight into some core Haskell functions and types.
+We show in the evaluation section that the small number of examples is needed to synthesize clear and concise solution programs.
 
 % fewer examples are needed when leveraging user functions
 Although programming by example is an easy entry point for novice
@@ -77,6 +67,18 @@ specific knowledge is encoded by the user defined function, data types
 and library imports.  By focusing our synthesis procedures on this
 space of solution, we can reduce the number of edge case examples and
 allow users to focus on the more natural examples.
+
+
+In Listing \ref{natSyn}, we have already seen the potential to synthesize natural solutions to programming by example queries.
+However, a synthesis engine should also be able to synthesize novel (and sometimes unexpected) solutions to problems. 
+Since the stated goal is to find simple programs that a human might write, this raises the question if finding ``natural'' and and novel programs are at odds with each other.
+
+
+Our evaluation section showed that this is not the case.
+For example, natural synthesis of the Boolean ``or'' function finds two function, \codeinline{any (id)} and \codeinline{foldr1 (max)}.
+The \codeinline{any (id)} solution would expected by Haskell programmer, where \codeinline{any:: (a-> Bool) -> [a] -> Bool)} is a built-in function to Haskell that returns \codeinline{True} if any element of a list satisfies the predicate function. 
+The more novel solution returned by our natural synthesis is \codeinline{foldr1 (max)}, where \codeinline{max :: Ord a => a -> a -> a} will return the maximum element of the two inputs.
+By folding over the list, this solution program exploits the \codeinline{Enum} property of the Boolean type in Haskell in a way that provides insight into some core Haskell functions and types.
 
 In summary, our paper makes the following contributions:
 
