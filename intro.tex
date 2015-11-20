@@ -66,3 +66,12 @@ specific knowledge is encoded by the user defined function, data types
 and library imports.  By focusing our synthesis procedures on this
 space of solution, we can reduce the number of edge case examples and
 allow users to focus on the more natural examples.
+
+In summary, our paper makes the following contributions:
+
+\begin{enumerate}[topsep=0pt]
+\item Adding natural synthesis into a real language (Haskell) to support a programming by example system that generates simple code.
+\item Supporting user defined data types, first order functions, and higher order functions, as well as handling library imports to further support full integration into Haskell.
+\item Automatically inferring refinement types on user defined higher order functions to assist with pruning the search space of synthesis. We use multiple passes of type match ranking algorithm to sort, prune, and when needed expand, the search space.
+\item We present an evaluation of the performance of \ourTool/, as well as showing examples of the code that it can synthesize.
+\end{enumerate}
