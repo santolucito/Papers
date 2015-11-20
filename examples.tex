@@ -5,7 +5,7 @@
 
 As an introduction to \ourTool/, imagine that a user wants to synthesis the simple \codeinline{stutter} \cite{Osera:2015} function which duplicates each element of a list.
 While in MYTH~\cite{Osera:2015} the focus was on lists as inductively defined data types, we are focusing on using the built in representation of a list in Haskell.
-Haskell provides two relevant functions for this task in the standard library - \codeinline{concatMap} which applies a function over a list and concatenates the result, and \codeinline{replicate n} which will replicate an item n times into a list.
+Haskell provides two relevant functions for this task in the standard library; \codeinline{concatMap :: (a -> [b]) -> [a] -> [b]} which applies a function over a list and concatenates the result, and \codeinline{replicate n :: Int -> a -> [a]} which will replicate an item n times into a list.
 When working over the inductively defined list data type, MYTH requires three examples to find an appropriate function. Using \ourTool/, the user only needs to provides a single example to synthesize the program \codeinline{concatMap (replicate 2)} that fits that example on Haskell's builtin list type.
 
 \begin{lstlisting}
@@ -21,7 +21,7 @@ dupl x = [x,x]
 \end{lstlisting}
 
 In the next example the user would like to synthesize a function that takes numbers from a list as long as the numbers are odd.
-Again, only a single example is needed for \ourTool/ to unambiguously find  simple solution program, \codeinline{takeWhile odd}, using functions from the standard library. 
+Again, only a single example is needed for \ourTool/ to unambiguously find  simple solution program, \codeinline{takeWhile odd}, using functions the from the standard library; \codeinline{takeWhile :: (a -> Bool) -> [a] -> [a]} and \codeinline{odd :: Int -> Bool} . 
 
 \begin{lstlisting}
 exs :: [[Int] :-> [Int]]
@@ -60,7 +60,7 @@ Using \ourTool/, the user no longer needs an intimate knowledge of the library t
 As an example, we show code to transpose a music value from the Euterpea DSL (domain specific library) for music\cite{euterpea}.
 Among other things, Euterpea defines a tree-like datatype called \codeinline{Music} and various functions for manipulating these types.
 The user only needs to express the basic datatype as examples, and \ourTool/ can synthesize the \codeinline{solution} program.
-The solution utilizes the functions from Euterpea; \codeinline{mMap} for mapping over music values, and \codeinline{(trans::Int->Music Pitch->Music Pitch)} to transpose a Music Pitch by a value.
+The solution utilizes the functions from Euterpea; \codeinline{mMap} for mapping over music values, and \codeinline{(trans::Int -> Music Pitch->Music Pitch)} to transpose a Music Pitch by a value.
 This again requires automated reasoning about the properties of the library's data types and higher order functions.
 Because we have synthesized a natural looking program, the user does not need to understand details of the library's function and data structures to be able to immediately gain an intuition about how the solution program works.
 
