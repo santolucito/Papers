@@ -1,0 +1,41 @@
+\section{Related Work}
+\label{sec:related}
+
+In describing \ourTool/, we have shown how relying on a type-directed synthesis approach frees us from burdensome constraints of code analysis and hard coded inference rules, and allows \ourTool/ to synthesis natural and organic code. Many of the techniques we have used have been explored in various contexts before, though generally for the purpose of lower level synthesis. In this section we make some comparisons to related work, and highlight the differences we employ that help us generate readable code.
+
+One of the most closely related works in terms of the aspirations is Katayama's MagicHaskeller~\cite{DBLP:conf/aaip/Katayama09}. This project makes heavy use of a ranking system based on code use and lookup frequency in a database to deliver natural results to the user. In contrast to our work, MagicHaskeller uses a database of functions as its main synthesis engine, with the current database hovering around 
+64GB~\cite{DBLP:conf/agi/Katayama15}. From this work, we take the inspiration of supporting imported libraries for creating natural code. However, it is important that the system is more portable and easily manipulated by the user - in particular by allowing user defined function in synthesis.
+
+MagicHaskeller work is in the same AI focused domain of inductive programming as the tool IgorII~\cite{DBLP:conf/aaip/HofmannKS09}. IgorII however takes a very code analysis heavy approach, having been originally developed for Maude, then ported to Haskell.
+
+One of the motivating works for exploring type-directed programming by example, especially over recursively defined datatypes is MYTH introduced in~\cite{Osera:2015}. The natural extension of this work in the usability direction was to include a more lightweight and flexible support for user defined and imported datatypes. The $\Lambda^2$ tool also focuses on deriving programs over recursively defined datatypes~\cite{Feser:2015}. One of the major barriers to an average user with these tools, is that the generated code operates on the inner workings on a datatype. While this provides a complete picture of all the data manipulation, often a user might prefer to simply be provided with high level, functioning code. Building in support and the ability to reason on user defined functions in \ourTool/ has made this natural synthesis possible.
+
+Another feature these works support is the synthesis of first order function.
+According to our problem specification in Section \ref{problem}, we are only focused on synthesizing higher order functions. 
+One common synthesis problem these works present is to append an item to a list.
+If we were to extend our strategy to first order functions, \ourTool/ would just search through the libraries to find the \codeinline{append} function, as the most natural solution. 
+With the eventual goal of building a complete program synthesis engine, we will need to integrate with more advanced first order function synthesis systems.
+While this problem has been investigated in isolation, it is not clear how to efficiently determine if a set of examples more naturally calls for a higher order function or a first order function.
+
+One direction to explore for first order synthesis is the type reduction algorithm in Section \ref{initVals}.
+In providing initial values for component functions, we current are strictly reducing the number of kinds in a type signature.
+While this gives us a termination of search guarantee and completeness over the search space, that is not particularly useful guarantee in this case.
+Imagining \ourTool/ integrated with an IDE, it would be better to keep the tool running constantly to infinitely search for new suggestions to the code.
+To this end we could also enable non-reducing types reducing applications, which would create an infinite recursion, but allow us to find many more functions.
+Rather than supplying values to functions, we could supply more functions.
+
+\begin{lstlisting}
+--given the component function
+f :: Int -> Int
+f = (+1)
+--expand the type
+f' :: Int -> Int
+f' = f . (+2)
+
+\end{lstlisting} 
+
+One difficult limitation is that without subexample generation we cannot recursively apply our algorithm as in the $\Lambda^2$ tool~\cite{Feser:2015}.
+Subexample generation gives the ability to recursively call the synthesis engine to generate programs with multiple applications of high order functions.
+However, since the ability of $\Lambda^2$ to generate subexamples relied on hard coded subexample generation hypotheses for the predefined set of higher order functions, this does not scale.
+While inferring the hypotheses might be possible by inspecting the code, we have maintained a dedication to minimize our reliance on code analysis techniques for portability and longevity of the system. 
+How to create subexample generation functions solely based on type information remains a difficult problem.
