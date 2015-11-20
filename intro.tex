@@ -51,8 +51,8 @@ While using concatMap is certainly the most natural solution in Listing \ref{nat
 Since historically one of the exciting parts of program synthesis is to find unexpected results, this raises a question if it is possible for a natural synthesis system to create such results - after all, the stated goal is to find simple programs that a human might write.
 
 In our results we have found many such cases in fact. 
-For example, synthesizing the boolean ``or'' function would return the expected \codeinline{any (id)}, where any is a builtin function to haskell that returns \codeinline{True} if anything in a list satisfies the predicate function. 
-Another solution that is unexpected is \codeinline{foldr1 (max)}, which exploits the \codeinline{Enum} property of the boolean type in Haskell. 
+For example, synthesizing the Boolean ``or'' function would return the expected \codeinline{any (id)}, where any is a built-in function to Haskell that returns \codeinline{True} if anything in a list satisfies the predicate function. 
+Another solution that is unexpected is \codeinline{foldr1 (max)}, which exploits the \codeinline{Enum} property of the Boolean type in Haskell. 
 Details of this will be discussed in Section \ref{evaluation}, but it enough to say here that this is evidence of the broad range of application for natural synthesis.
 
 % fewer examples are needed when leveraging user functions
