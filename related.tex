@@ -24,7 +24,7 @@ Imagining \ourTool/ integrated with an IDE, it would be better to keep the tool 
 To this end we could also enable non-reducing types reducing applications, which would create an infinite recursion, but allow us to find many more functions.
 Rather than supplying values to functions, we could supply more functions.
 
-\begin{lstlisting}
+\begin{lstlisting}[numbers=none]
 -- given a component function
 f :: Int -> Int
 f = (+1)
@@ -36,9 +36,9 @@ f' = f . (+2)
 
 The relationship between refinement types and examples is explored in detail in~\cite{Osera:2016}, leading them to use refinement types to extend the specification language of a programming by example system. Instead, \ourTool/ keeps refinement types entirely as a backend logical inference technique and hidden from the user. In line with our goal of synthesizing natural code, we wish to minimize the asking the onerous task of users to learn to write new specifications. Simple as they may be, refinement types are unlikely to seem as approachable as the more familiar ``examples as a specification'' to the average user. 
 
-Taking the refinement types as a specification even further,~\cite{dblp1683325} proposes a system Synquid, that will synthesize programs based on refinement types. While at first glance this seems to be an entirely different approach than \ourTool/, which only uses refinement types as a search space pruning tool, the work in~\cite{Osera:2016} does give an indication that our use of refinement types is tied to a more fundamental basis. In exploring this relationship in more depth, we may be able to draw a stronger parallel between these various works and port ideas from one system to another.
+Taking the refinement types as a specification even further,~\cite{dblp1683325} proposes a system Synquid, that will synthesize programs based on refinement types. At first glance this seems to be an entirely different approach than \ourTool/, which intead uses examples as the specification and only uses refinement types as a search space pruning tool. However, the work in~\cite{Osera:2016} does give an indication that our use of refinement types may be related on fundamental, proof theoretic level. By exploring this relationship in more depth, it may be possible to draw a stronger parallel between these various works and port ideas from one system to another.
 
-One of the most widely used and well known instances of a programming by example system being used by many novice users is FlashFill\cite{GulwaniHS12}. Like other system, the goal of this work is to make executable, not code. This leaves users without the ability to modify generated source code. In the case of FlashFill, being embedding within production level software, most users are not clamoring for this feature. However it would certainly open an intersting avenue to introduce new users to computer programming if this were an option. StriSynth~\cite{icse} takes a step in this direction by providing a natural language description of the synthesized program, but the source code remains inaccessible.
+One of the most widely used and well known instances of a programming by example system being used by many novice users is FlashFill\cite{GulwaniHS12}. Like other system, the goal of this work is to make executable, not code. This leaves users without the ability to modify generated source code. In the case of FlashFill, being embedding within production level software, most users are not clamoring for this feature. However it would certainly open an interesting avenue to introduce new users to computer programming if this were an option. StriSynth~\cite{icse} takes a step in this direction by providing a natural language description of the synthesized program, but the source code remains obfuscated and inaccessible.
 
 One difficult limitation is that without subexample generation we cannot recursively apply our algorithm as in the $\Lambda^2$ tool~\cite{Feser:2015}.
 Subexample generation gives the ability to recursively call the synthesis engine to generate programs with multiple applications of high order functions.
