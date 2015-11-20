@@ -1,14 +1,43 @@
 \section{Introduction} 
 \label{intro}
 
-% higher order fxns are important
-A core part of the functional programming experience is writing higher order functions. The functional programming approach encourages specifying general behaviors in the form of abstract, higher-order functions first, and filling in details with first-order functions later. Many users write higher order functions first, then combine them in interesting and useful ways. Library authors often provide users with many higher order functions to allow users more easily write their applications. With this in mind, we provide a synthesis engine that is able to leverage user defined higher order functions.
-Since users write higher order functions with a deep understanding of the domain, using them will produce code that is more idiomatic and easier to understand then using generic higher order functions.
-
 % natural code
-Program synthesis is attractive because it allows users to create code that is correct over their specification. In this work we present a method for reaching beyond that goal to synthesis code that is both correct and idiomatic to the language. If a user is to use the synthesized code as more than an executable, it must be simple and make use of user defined functions, just as a real programmer would write.
+Program synthesis is an attractive research direction because it allows users to automatically create code that is correct over their specification. 
+That specification, in the case of examples, may be vastly more accessible than writing code to some users.
+But users can not survive on synthesis alone - basic programming skills are becoming more commonplace, and synthesis tool must be able to provide these users access to code.
+In this work we present a method for \textit{natural synthesis} that reaches beyond the goal of synthesizing correct code, and synthesizes code from examples that is natural and idiomatic to the language. 
+
+If synthesized code is to be more than an executable, it must be simple and stylistic, just as a human programmer would write.
+A natural synthesis system should focus on program structures that commonly occur in the language and makes use of user defined functions.
+We choose to focus on functional programming, where a core part of the experience is writing higher order functions.
+The functional programming approach encourages specifying general behaviors in the form of abstract, higher-order functions first, and filling in details with first-order functions later.
+Many users write higher order functions first, then combine them in interesting and useful ways.
+Library authors often provide users with many higher order functions to allow users more easily write their applications.
+With this in mind, a natural synthesis engine that is able to leverage user defined higher order functions.
+
+Since users write higher order functions with a deep understanding of the domain, using them produces code that is more idiomatic and easier to understand then using generic higher order functions.
+Take the simple task of synthesizing from examples. Using only the primitive recursive operators, one might hope to find a function like the GHC\cite{ghc} implementation of concatMap (solution1). Our tool instead focuses on actually utilizing these library functions (solution2).
+
+\begin{lstlisting}
+[[1,2],[3,4]] :-> [1,2,3,4]
+
+solution1 xs = 
+  (\c n -> foldr 
+      (\x b -> foldr c b (id x))
+      n xs) (:) []
+      
+solution2 xs =
+  concatMap id xs
+\end{lstlisting}
+\noindent While it is an interesting solution to try to synthesize using a tool that focuses on using only the core higher order function, a user would likely prefer to simply see \codeinline{concatMap} in the synthesized code.
+
+While using concatMap is certainly the most natural solution, it is not surprising or novel solution.
+Since historically one of the exciting parts of program synthesis is to find unexpected results, this rasies a question if it is possible for a natural synthesis system to create such results - after all, the stated goal is to find results that a human might write.
+
+In our results we have found many such cases in fact. For example, synthesizing the boolean ``or'' function would return the expected \codeinline{any (id)}, where any is a builtin function to haskell that returns \codeinline{True} if anything in a list satisfies the predicate function. Another solution that is unexpected is \codeinline{foldr1 (max)}, which exploits the \codeinline{Enum} property of the boolean type in Haskell. Details of this will be discussed in Section \ref{evaluation}, but it enough to say here that this is evidence of the broad range of application for natural synthesis.
 
 % fewer examples are needed when leveraging user functions
-One of the drawbacks of programming by example can be the tedious nature of the specification. 
-For a user, writing out a sufficient number of examples for the synthesis tool to find a solution may involve specifying seemingly obvious examples such as \codeinline{[]->[]}.
-Once we are able to leverage the domain specific knowledge encoded by the user defined function, data types and library imports, fewer examples are needed.
+Although programming by example is an easy entry point for novice users, one of the drawbacks can be the tedious nature of the specification. 
+For a user, writing out a sufficient number of examples for the synthesis tool to find a solution may involve specifying seemingly obvious examples such as \codeinline{[]->[]} in order to cover base cases of recursion.
+However, much of this domain specific knowledge is encoded by the user defined function, data types and library imports.
+By focusing our synthesis procedures on this space of solution, we can reduce the number of edge case examples and allow users to focus on the more natural examples.
