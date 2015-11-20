@@ -2,15 +2,18 @@
 \label{examples}
 
 
-As an introduction to \ourTool/, imagine that a user wants to synthesis the simple \codeinline{stutter} function that will duplicate each element of a list.
-The user will provide an example, and \ourTool/ will synthesis a program \codeinline{concatMap (replicate 2)} that fit that example.
+As an introduction to \ourTool/, imagine that a user wants to synthesis the simple \codeinline{stutter} \cite{Osera:2015} function which duplicates each element of a list.
+
+\ruzica{add here two functions in the standard library, list them and explain}
+
+The user provides a single example, and \ourTool/ automatically synthesis a program \codeinline{concatMap (replicate 2)} that fit that example.
 
 \begin{lstlisting}
 exs :: [[Int] :-> [Int]]
 exs = [[1, 2, 3] :-> [1, 1, 2, 2, 3, 3]]
 \end{lstlisting}
 
-We might also imagine that the user was able to complete a piece of this program by writing a function \codeinline{dupl} to duplicate an element. Now \ourTool/ will provide the solution \codeinline{concatMap dupl}, as well as the solution above.
+If, in addition, the user develops her own function \codeinline{dupl} which duplicates an element (see below), then \ourTool/ will provide the solution \codeinline{concatMap dupl}, as well as the solution listed above.
 
 \begin{lstlisting}
 dupl :: a -> [a]
