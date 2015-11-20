@@ -1,6 +1,14 @@
 \section{Introduction} 
 \label{intro}
 
+% higher order fxns are important
 A core part of the functional programming experience is writing higher order functions. The functional programming approach encourages specifying general behaviors in the form of abstract, higher-order functions first, and filling in details with first-order functions later. Many users write higher order functions first, then combine them in interesting and useful ways. Library authors often provide users with many higher order functions to allow users more easily write their applications. With this in mind, we provide a synthesis engine that is able to leverage user defined higher order functions.
+Since users write higher order functions with a deep understanding of the domain, using them will produce code that is more idiomatic and easier to understand then using generic higher order functions.
 
-Since users write higher order functions with a deep understanding of the domain, using them will produce code that is more idiomatic and easier to understand then using generic higher order functions. Additionally, fewer examples are needed because we have access to the domain specific knowledge encoded by the user library.
+% natural code
+Program synthesis is attractive because it allows users to create code that is correct over their specification. In this work we present a method for reaching beyond that goal to synthesis code that is both correct and idiomatic to the language. If a user is to use the synthesized code as more than an executable, it must be simple and make use of user defined functions, just as a real programmer would write.
+
+% fewer examples are needed when leveraging user functions
+One of the drawbacks of programming by example can be the tedious nature of the specification. 
+For a user, writing out a sufficient number of examples for the synthesis tool to find a solution may involve specifying seemingly obvious examples such as \codeinline{[]->[]}.
+Once we are able to leverage the domain specific knowledge encoded by the user defined function, data types and library imports, fewer examples are needed.
