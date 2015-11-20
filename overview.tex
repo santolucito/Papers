@@ -1,8 +1,33 @@
 \section{System Overview}
 
+
+
 \begin{figure}[t]
   \centering
-  \includegraphics[width=0.4\textwidth]{algo}
+% Define block styles
+\tikzstyle{block} = [rectangle, draw, fill=none, 
+    text centered, sharp corners, minimum height=3em]
+\tikzstyle{line} = [draw, -latex']
+    
+\begin{tikzpicture}[node distance = 7em, auto]
+    % Place nodes
+    \node [block](hofu) {select HO functions};
+    \node [block, above left of=hofu] (libraries) {standard libraries};
+    \node [block, above right of=hofu] (API) {user definded functions};
+    \node [block, below of=hofu, node distance=5em] (refty) {assigning refinement types};
+    \node [block, below of=refty, node distance=5em] (engine) {synthesis engine};
+    \node [block, left of=engine, node distance=7em] (examples) {examples};
+    \node [block, right of=engine, node distance=7em] (program) {program};
+
+    
+    % Draw edges
+    \path [line] (libraries) -- (hofu);
+    \path [line] (API) -- (hofu);
+    \path [line] (hofu) -- (refty);
+    \path [line] (refty) -- (engine);
+    \path [line] (examples) -- (engine);
+    \path [line] (engine) -- (program);
+\end{tikzpicture}
   \caption{High-level structure of the algorithm.}
   \label{fig:high_level_overview}
 \end{figure}
