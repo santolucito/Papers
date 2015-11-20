@@ -3,7 +3,7 @@
 
 In describing \ourTool/, we have shown how relying on a type-directed synthesis approach frees us from burdensome constraints of code analysis and hard coded inference rules, and allows \ourTool/ to synthesis natural and organic code. Many of the techniques we have used have been explored in various contexts before, though generally for the purpose of lower level synthesis. In this section we make some comparisons to related work, and highlight the differences we employ that help us generate readable code.
 
-One of the most closely related works in terms of the aspirations is MagicHaskeller~\cite{DBLP:conf/aaip/Katayama09}. This project makes heavy use of a ranking system based on code use and lookup frequency in a database to deliver natural results to the user. In contrast to our work, MagicHaskeller uses a database of functions as its main synthesis engine, with the current database hovering around 
+One of the most closely related works in aspirations is MagicHaskeller~\cite{DBLP:conf/aaip/Katayama09}. This project makes heavy use of a ranking system based on code use and lookup frequency in a database to deliver natural results to the user. In contrast to our work, MagicHaskeller uses a database of functions as its main synthesis engine, with the current database hovering around 
 64GB~\cite{DBLP:conf/agi/Katayama15}. From this work, we take the inspiration of supporting imported libraries for creating natural code. However, it is important that the system is more portable and easily manipulated by the user - in particular by allowing user defined function in synthesis.
 
 MagicHaskeller work is in the same AI focused domain of inductive programming as the tool IgorII~\cite{DBLP:conf/aaip/HofmannKS09}. IgorII however takes a very code analysis heavy approach, having been originally developed for Maude, then ported to Haskell.
@@ -44,4 +44,4 @@ One difficult limitation is that without subexample generation we cannot recursi
 Subexample generation gives the ability to recursively call the synthesis engine to generate programs with multiple applications of high order functions.
 However, since the ability of $\Lambda^2$ to generate subexamples relied on hard coded subexample generation hypotheses for the predefined set of higher order functions, this does not scale.
 While inferring the hypotheses might be possible by inspecting the code, we have maintained a dedication to minimize our reliance on code analysis techniques for portability and longevity of the system. 
-How to create subexample generation functions solely based on type information remains a difficult problem.
+The best way to automatically create subexample generation functions solely based on type information remains a difficult problem.
