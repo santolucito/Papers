@@ -1,6 +1,7 @@
 \section{Motivating Examples} 
 \label{examples}
 
+\subsection{Synthesis using ???}
 
 As an introduction to \ourTool/, imagine that a user wants to synthesis the simple \codeinline{stutter} \cite{Osera:2015} function which duplicates each element of a list.
 
@@ -20,14 +21,30 @@ dupl :: a -> [a]
 dupl x = [x,x]
 \end{lstlisting}
 
-Because \ourTool/ only searches for natural and idiomatic programs that use higher order functions, very few examples are needed. In this case the user wants a function that will take numbers from a list as long as the numbers are odd. Only a single example is needed for \ourTool/ to unambiguously find the function \codeinline{takeWhile odd}. Another valid function might be \codeinline{head} to take the first element. Searching for first order functions is an active research direction, but in this work we instead focus only on higher order functions. A discussion of integrating our tool with first order searching techniques in provided in Section \ref{evaluation}.
+Because \ourTool/ synthesizes programs that use higher order functions, in general very few examples are needed. 
+
+
+\subsection{Again some name}
+
+In the next example the user would like to synthesize a function that takes numbers from a list as long as the numbers are odd. 
 
 \begin{lstlisting}
 exs :: [[Int] :-> [Int]]
 exs = [[1, 2, 3] :-> [1]]
 \end{lstlisting}
 
+Only a single example is needed for \ourTool/ to unambiguously find the function \codeinline{takeWhile odd}.
+
+\ruzica{ describe takeWhile and odd}
+
+Another correct solution for this example might be \codeinline{head} to take the first element. Searching for first order functions is an active research direction \cite{Osera:2015, Osera:2016, Feser:2015}, but in this work we are focused only on higher order functions. A discussion of integrating our tool with first order searching techniques in provided in Section \ref{evaluation}.
+
+\subsection{Synthesis using user defined datatypes}
+
 Working on user defined datatypes is also a commonplace task \ourTool/ supports. In the next example the user has provided a binary tree data structure and a function to map over it. For the sack of brevity, we show the synthesis the exceedingly simple program \codeinline{mapBTree not}.
+
+\ruzica{???? what is the goal here?}
+
 
 \begin{lstlisting}
 data BTree a = Nil |
@@ -48,6 +65,9 @@ However, imagine the incredibly common case of a user importing libraries.
 Haskell's module system and large repository of libraries like Hackage and Stackage are an indispensable part of the language\cite{hackage,stackage}.
 Often, a user is importing a library that is large, unfamiliar, and/or poorly documented.
 Using \ourTool/, the user no longer needs an intimate knowledge of the library to makes use of the functions and datatypes, and can instead synthesize functions from examples.
+
+
+\subsection{Synthesis ... DSL,...}
 
 As an example, we show code to transpose a music value from the Euterpea DSL for music\cite{euterpea}.
 Among other things, Euterpea defines a tree-like datatype called \codeinline{Music} and various functions for manipulating these types.
