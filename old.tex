@@ -144,9 +144,16 @@ There are however repercussions to this approach. We are not guaranteed to gener
 
 
 
+%this entire thing is false in fact, we could have mapIdInt :: (a->b) -> [Int]->[Int]
+Since examples must be given as a concrete type, we can always specialize a our candidate higher order function using basic type unification\cite{typeUnif}. 
+Additionally, given our requirement that all type variables are determined by the uncurried input from Section \ref{problem}, we will have specialized all type variables.
+Without this assumption, it would be possible to have lingering polymorphism in the function signature (e.g. with \codeinline{exs::[Int]->[Int]), we could only conclude \codeinline{zipWith::(a->Int->Int)->[a]->[Int]->[Int]}).
+By specializing the higher order function on the example type, we now know the concrete type of the entire component function.
+
+An example of this would be trying to use \codeinline{negate::Int->Int} as a component for \codeinline{::a->a}
 
 
-
+A \textit{dismantling procedure} prunes the first order function search space by using information from the top level examples, and the current state of synthesis.
 
 
 \begin{lstlisting}
