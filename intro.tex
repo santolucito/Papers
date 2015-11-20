@@ -26,38 +26,20 @@ Take the simple task of synthesizing a list flattening function from examples.  
     \end{lstlisting}
 \end{figure}
 
-
-
 \noindent In fact, \codeinline{solution1} is an application of the GHC\cite{ghc} implementation of concatMap. To synthesize this solution using only the core higher order functions is certainly motivating, however a user would likely prefer to see a higher order-function \codeinline{concatMap}, which exists in a standard library, if using synthesis with the goal of writing their own code.
 
-A natural synthesis system makes use of user defined functions and simulates program structures that commonly occur in the language.  
-We choose to focus on functional programming, where a core part of the experience is writing higher order functions.  
+A natural synthesis system makes use of user defined functions and simulates program structures that commonly occur in the language. We choose to focus on functional programming, where a core part of the experience is writing higher order functions.  
 
-Functional programming encourages specifying general behaviors in the form of abstract, higher-order functions, and then filling in details with first-order functions later.
-In fact, many users write higher order functions first, then combine them in interesting and useful ways~\cite{Lipovaca:2011}.
-Library authors often provide users with a number of higher order functions to allow users more easily write their applications.
-Since users write higher order functions with a deep understanding of the domain, using them produces code that is more idiomatic and easier to understand then using generic higher order functions.
+Functional programming encourages specifying general behaviors in the form of abstract, higher-order functions, and then filling in details with first-order functions later. In fact, many users write higher order functions first, then combine them in interesting and useful ways~\cite{Lipovaca:2011}. Library authors often provide users with a number of higher order functions to enable programmers to more easily write their applications. Since users write higher order functions with a deep understanding of the domain, using them in synthesis produces code that is more idiomatic and easier to understand then using generic higher order functions.
 
-In order to facilitate synthesis over generic higher order functions, we run the synthesis algorithm in two stages. 
-The first offline preprocessing stage infers rules about how the user's higher order functions behave over their input and output types.
-We encode these rules using refinement types in Haskell with the \lhask/ tool~\cite{DBLP:conf/haskell/VazouSJ14}.
-Refinement types allow us to specify a stronger type signature by adding predicates about various properties of the types.
-In this work we only utilize the ability of refinement types to make judgments on the sizes input and output type, to be explained in more detail in Section \ref{HORtypeInf}.
-These refinement types can then be utilized in the online synthesis stage, along with various type matching, ranking, and unification algorithms to efficiently prune and navigate the search space of solution programs.
-We show in the evaluation section that the small number of examples is needed to synthesize clear and concise solution programs.
+In order to facilitate synthesis over generic higher order functions, we run the synthesis algorithm in two stages. The first offline preprocessing stage infers rules about how the user's higher order functions behave over their input and output types. We encode these rules using refinement types in Haskell with the \lhask/ tool~\cite{DBLP:conf/haskell/VazouSJ14}. Refinement types allow us to specify a stronger type signature by adding predicates about various properties of the types. In this work we only utilize the ability of refinement types to make judgments on the sizes input and output type, to be explained in more detail in Section \ref{HORtypeInf}. These refinement types can then be utilized in the online synthesis stage, along with various type matching, ranking, and unification algorithms to efficiently prune and navigate the search space of solution programs. We show in the evaluation section that the small number of examples is needed to synthesize clear and concise solution programs.
 
 % fewer examples are needed when leveraging user functions
 Although programming by example is an easy entry point for novice
 users, one of the drawbacks can be the tedious nature of the
 specification.  For a user, writing out a sufficient number of
 examples for the synthesis tool to find a solution may involve
-specifying seemingly obvious examples such as \codeinline{[]->[]} in
-order to cover base cases of recursion.  However, much of this domain
-specific knowledge is encoded by the user defined function, data types
-and library imports.  By focusing our synthesis procedures on this
-space of solution, we can reduce the number of edge case examples and
-allow users to focus on the more natural examples.
-
+specifying seemingly obvious examples such as \codeinline{[]->[]} in order to cover base cases of recursion.  However, much of this domain specific knowledge is encoded by the user defined function, data types and library imports.  By focusing our synthesis procedures on this space of solution, we can reduce the number of edge case examples and allow users to focus on the more natural examples.
 
 In Listing \ref{natSyn}, we have already seen the potential to synthesize natural solutions to programming by example queries.
 However, a synthesis engine should also be able to synthesize novel (and sometimes unexpected) solutions to problems. 
