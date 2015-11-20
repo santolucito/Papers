@@ -34,6 +34,10 @@ f' = f . (+2)
 
 \end{lstlisting} 
 
+The relationship between refinement types and examples is explored in detail in~\cite{Osera:2016}, an indication that our use of refinement types as a more fundemental basis.
+
+FlashFill makes executables, not code. StriSynth focuses on the user experience by providing a natural language description of the synthesized program, but the code is still totally inaccessible. 
+
 One difficult limitation is that without subexample generation we cannot recursively apply our algorithm as in the $\Lambda^2$ tool~\cite{Feser:2015}.
 Subexample generation gives the ability to recursively call the synthesis engine to generate programs with multiple applications of high order functions.
 However, since the ability of $\Lambda^2$ to generate subexamples relied on hard coded subexample generation hypotheses for the predefined set of higher order functions, this does not scale.
