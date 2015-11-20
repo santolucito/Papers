@@ -38,14 +38,17 @@ solution2 xs =
   concatMap id xs
 \end{lstlisting}
 
-\noindent In fact, \codeinline{solution1} is an application of the GHC\cite{ghc} implementation of concatMap. To synthesize this solution using only the core higher order functions is certainly motivating, however a user would likely prefer to simply see \codeinline{concatMap} if using synthesis with the goal of writing their own code.
+\noindent In fact, \codeinline{solution1} is an application of the GHC\cite{ghc} implementation of concatMap. To synthesize this solution using only the core higher order functions is certainly motivating, however a user would likely prefer to see a higher order-function \codeinline{concatMap}, which exists in a standard library, if using synthesis with the goal of writing their own code.
 
 A natural synthesis system makes use of user defined functions and simulates program structures that commonly occur in the language.  
 We choose to focus on functional programming, where a core part of the experience is writing higher order functions.  
-Functional programming encourages specifying general behaviors in the form of abstract, higher-order functions, and then filling in details with first-order functions later.
-Many users write higher order functions first, then combine them in interesting and useful ways.
-Library authors often provide users with many higher order functions to allow users more easily write their applications.
+
+It is consider a good practice in functional programming \ruzica{is there a citation?} that encourages specifying general behaviors in the form of abstract, higher-order functions, and then filling in details with first-order functions later.
+In fact, many users write higher order functions first, then combine them in interesting and useful ways. \ruzica{again: a citation would be great here}
+Library authors often provide users with a number of higher order functions to allow users more easily write their applications.
 Since users write higher order functions with a deep understanding of the domain, using them produces code that is more idiomatic and easier to understand then using generic higher order functions.
+
+\ruzica{this part is poor}
 
 While using concatMap is certainly the most natural solution in Listing \ref{natSyn}, it is not surprising or novel solution. 
 Since historically one of the exciting parts of program synthesis is to find unexpected results, this raises a question if it is possible for a natural synthesis system to create such results - after all, the stated goal is to find simple programs that a human might write.
