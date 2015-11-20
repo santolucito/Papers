@@ -43,24 +43,25 @@ solution2 xs =
 A natural synthesis system makes use of user defined functions and simulates program structures that commonly occur in the language.  
 We choose to focus on functional programming, where a core part of the experience is writing higher order functions.  
 
-It is consider a good practice in functional programming \ruzica{is there a citation?} that encourages specifying general behaviors in the form of abstract, higher-order functions, and then filling in details with first-order functions later.
-In fact, many users write higher order functions first, then combine them in interesting and useful ways. \ruzica{again: a citation would be great here}
+Functional programming encourages specifying general behaviors in the form of abstract, higher-order functions, and then filling in details with first-order functions later.
+In fact, many users write higher order functions first, then combine them in interesting and useful ways~\cite{Lipovaca:2011}.
 Library authors often provide users with a number of higher order functions to allow users more easily write their applications.
 Since users write higher order functions with a deep understanding of the domain, using them produces code that is more idiomatic and easier to understand then using generic higher order functions.
 
+In order to facilitate synthesis over generic higher order function, we split synthesis into two stages. 
+The first offline preprocessing stage will infer rules about how the user's higher order functions behave over their input and output types.
+These rules can then be applied in the online synthesis stage, along with various type matching, ranking, and unification algorithms to efficiently prune and navigate the search space of solution programs.
+We will show in our evaluation the small number of examples needed to synthesize clear and concise solution programs.
 
-\ruzica{add now here a high level, three sentances describing what do we actually do: talk about two phase synthesis, parsing and using refinement types for pruning search space}
+In Listing \ref{natSyn}, we have already seen the potential to synthesize natural solutions to programming by example queries.
+However, any good synthesis engine will also be able to synthesize novel and unexpected solutions to problems. 
+Since the stated goal is to find simple programs that a human might write, this raises the question if natural synthesis and novel synthesis are at odds with each other.
 
-
-\ruzica{this part is poor}
-
-While using concatMap is certainly the most natural solution in Listing \ref{natSyn}, it is not surprising or novel solution. 
-Since historically one of the exciting parts of program synthesis is to find unexpected results, this raises a question if it is possible for a natural synthesis system to create such results - after all, the stated goal is to find simple programs that a human might write.
-
-In our results we have found many such cases in fact. 
-For example, synthesizing the Boolean ``or'' function would return the expected \codeinline{any (id)}, where any is a built-in function to Haskell that returns \codeinline{True} if anything in a list satisfies the predicate function. 
-Another solution that is unexpected is \codeinline{foldr1 (max)}, which exploits the \codeinline{Enum} property of the Boolean type in Haskell. 
-Details of this will be discussed in Section \ref{evaluation}, but it enough to say here that this is evidence of the broad range of application for natural synthesis.
+In our results we have seen that this is not the case 
+For example, natural synthesis of the Boolean ``or'' function would return two function, \codeinline{any (id)} and \codeinline{foldr1 (max)}.
+The \codeinline{any (id)} solution would expected by Haskell programmer, where \codeinline{any:: (a-> Bool) -> [a] -> Bool)} is a built-in function to Haskell that returns \codeinline{True} if any element of a list satisfies the predicate function. 
+The more novel solution returned by our natural synthesis is \codeinline{foldr1 (max)}, where \codeinline{max :: Ord a => a -> a -> a} will return the maximum element of the two inputs.
+By folding over the list, this solution program exploits the \codeinline{Enum} property of the Boolean type in Haskell in a way that provides insight into some core Haskell functions and types.
 
 % fewer examples are needed when leveraging user functions
 Although programming by example is an easy entry point for novice
