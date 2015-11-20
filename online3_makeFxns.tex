@@ -1,11 +1,11 @@
 \subsection{Component function generation}\label{makeFxns}
 % makeFxns
 
-With an ordered set of higher order functions, we must now find first order functions to act as the component function of the higher order function.
-To choose the component function we reuse the weighted type matching algorithm from Listing \ref{valueAlgo}.
-In order to do this, we need to know the type signature of higher order function when applied to the examples.
-By specializing the higher order function on the example type, we now know the concrete type of the component function.
-Since examples must be given as a concrete type, we can always specialize a our candidate higher order function. 
+Recalling the solution space of programs defined in Section \ref{problem}, \ourTool/ must now find fisrt order function for each of the higher order functions that are still candidates.
+For a given higher order function, \ourTool/ can choose component functions by reusing the weighted type matching algorithm from Listing \ref{valueAlgo}.
+We are looking for first order functions that will type check against the component signature.
+In order to do this, we need to know the concrete type signature of higher order function when applied to the examples.
+
 Similar to Listing \ref{hoRank}, we show an example of how type matching is applied over first order functions in Listing \ref{compRank}.
 
 \begin{lstlisting}[caption=Ranking component function,label=comprank]
@@ -21,20 +21,8 @@ f3 :: Int    -> Int    -- value is 41
 f4 :: [Bool] -> [Bool] -- value is Nothing
 \end{lstlisting}
 
-
-Given this partially concrete type for the higher order function, we search for first order functions that will fit the component signature.
-If the component signature is a concrete instance of the first order function, we can also accept it as a possibility.
-This occurs when we try to use \codeinline{id::a->a} as a component for \codeinline{::Int->Int}.
-
-Note that at this stage of synthesis, we can never have a first order function that is a concrete instance of the component signature. 
-An example of this would be trying to use \codeinline{negate::Int->Int} as a component for \codeinline{::a->a}
-Given our requirement that all type variables are determined by the uncurried input from Section \ref{problem}, we will have specialized all type variables with the \codeinline{specializeOn} function.
-That means the component function must be concrete at this stage.
-This is really good for performance.
-
-A \textit{dismantling procedure} prunes the first order function search space by using information from the top level examples, and the current state of synthesis.
-
 \subsection{Initial Values}
+
 In the case that neither of those situations hold, we try to apply a value to the first order function.
 For instance, if the component signature is \codeinline{::Int->Int}, and we have the first order functions \codeinline{(+)::Int->Int->Int}, we apply some initial values to \codeinline{(+)} to get a new function (e.g. \codeinline{(+1)}) that fits the component signature.
 
@@ -42,7 +30,7 @@ If the initial value's type is an instance of Monoid, we can extract the unit va
 
 Additionally, requiring our users to write monoid instances for their datatypes may be a nuisance. However, users may have some domain knowledge that a particular value, or set of values, may be useful in their application. Since our system automatically considers functions defined in the user code base, users may simply write their own specializations of the higher order functions, or provide useful initial values, to be used in synthesis. 
 
-\begin{lstlisting}
+\begin{lstlisting}[caption=adding default initial values]
 -- to use 5 as an initial value for foldl
 foldl :: (a -> b -> a) -> [b] -> a
 foldl5 f i o = foldl f 5 i o
