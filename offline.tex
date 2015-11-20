@@ -1,3 +1,6 @@
+\section{Offline: Synthesis Engine Construction}
+
+
 \subsection{Refinement types for higher order functions}\label{HORtypeInf}
 
 % collectTypesAndWeights
@@ -48,7 +51,7 @@ These \codeinline{noRType} tagged functions can be further pruned in the synthes
 
 \subsection{User defined data types}
 %We focus only higher order functions that manipulate data structures
-In order to support user defined data structures, we only require that a user implements some kind of measure\cite{realWorldLiquid} over their data structure.
+In order to support user defined data structures, we only require that a user implements some kind of measure\cite{DBLP:conf/haskell/VazouSJ14} over their data structure.
 This size function will allow \lhask/ to determine size constraints on the examples, so that \ourTool/ can pick higher order functions that also satisfy those size predicates.
 In fact, the size function could just be a constant function, resulting in every function and example satisfying the equality refinement type predicate.
 This means the system will test every higher-order function that fits the types.
