@@ -38,7 +38,7 @@ solution2 xs =
   concatMap id xs
 \end{lstlisting}
 
-\noindent In fact, solution1 is an application of the GHC\cite{ghc} implementation of concatMap. While it is correct and motivating to synthesize a solution using only the core higher order functions, a user would likely prefer to simply see \codeinline{concatMap} in the synthesized code.
+\noindent In fact, \codeinline{solution1} is an application of the GHC\cite{ghc} implementation of concatMap. To synthesize this solution using only the core higher order functions is certainly motivating, however a user would likely prefer to simply see \codeinline{concatMap} if using synthesis with the goal of writing their own code.
 
 A natural synthesis system makes use of user defined functions and simulates program structures that commonly occur in the language.  
 We choose to focus on functional programming, where a core part of the experience is writing higher order functions.  
