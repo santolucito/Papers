@@ -1,7 +1,8 @@
 \section{Conclusions}
 \label{conclusions}
-Even for novice computer users, the need for basic programming skills is increasing. To meet this need, synthesis tools must be able to produce code that is not only correct, but also useful to the users of these tools.
+Even for novice computer users, the need for basic programming skills is increasing. To meet this need, synthesis tools must be able to produce code that is not only correct, but also useful to the users of these tools. Program synthesis is powerful, but much of this power is left untapped when results are obfuscated by level upon level of folds, filters, and maps. Correctness is only a baseline, if program synthesizers do not produce natural code, most will not be able to take full advantage of this field.
 
-Program synthesis is powerful, but as long as this power is obfuscated level upon level of folds, filters, and maps, most users will not be able to take full advantage of this field. 
+There are many directions left to explore. Integrating an example-aware first-order function synthesis procedure is a clear next step, and enhancing our refinement type inference from examples will allow greater search space pruning for practical efficiency benefits. Finally, our evaluation suggests that our tool would integrate well into a live programming environment.
 
-Program synthesis has been able to make correct functions, now it is time for it to make an impact.
+We believe our tool is a step in this direction. As we saw section \ref{evaluation}, we respond to synthesis queries with highly-readable, transparent, and ultimately natural functions that fit the examples provided. The offline / online structure of our algorithm allows novice users to interact with the useful synthesis part of our algorithm without dealing with the complicated refinement-type formulation of our search space pruning.
+

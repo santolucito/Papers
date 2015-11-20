@@ -6,7 +6,7 @@ For a given higher order function, \ourTool/ can choose component functions by r
 Since examples must be given as a concrete type, we can always partially specialize our candidate higher order function. 
 We then search for first order functions that will type check against the partially specialized component signature.
 This partial specialization is a way of extracting more information out of our examples, and significantly reduces the space of candidate first order functions.
-Similar to Listing \ref{hoRank}, we show an example of how type matching is applied over first order functions in Listing \ref{comprank}.
+Similar to Listing \ref{horank}, we show an example of how type matching is applied over first order functions in Listing \ref{comprank}.
 
 \begin{lstlisting}[caption=Ranking component function,label=comprank]
 examples ::            [Int] -> [Int]

@@ -13,7 +13,7 @@ Programming by example~\cite{cypher93,lieberman01,synasc12} is a promising resea
 Instead of writing code, the user provides a list of relevant examples and the synthesis tool automatically generates a program. 
 In this way, the examples can be seen as an easily readable and understandable specification. 
 In~\cite{Osera:2016}, the close connection between refinement types and examples is expounded through the lens of proof theory.
-Other works have explored further ramifications of the theory of programming by example\cite{Osera:2015,gulwani,armando}.
+Other works have explored further ramifications of the theory of programming by example\cite{Osera:2015,GulwaniHS12,synasc12}.
 These theoretical foundations give us the power and direction to begin to make programming by example a mainstream feature of fully featured languages.
 
 In order for programming by example to be useful in the context of a real language, synthesis cannot act as a closed system.
@@ -22,7 +22,7 @@ Program synthesis does not inherently address the problem of code readability, o
 Our goal is to synthesize code that can be naturally integrated into code written by a programmer.
 In this paper we introduce an approach called \textit{natural synthesis} that reaches beyond the goal of synthesizing correct code, and synthesizes code from examples that is natural and idiomatic to the language.
 
-Natural synthesis is the task of synthesizing programs from specification, with the explicit purpose of finding programs that are not only correct to the specification, but also comprehensible. The ideal natural synthesis procedure could pass something of a Turing test for writing code. A human inspecting the generated code should be able to understand it as easily as human written code.
+There is no formal definition of natural synthesis, but we take it to mean the task of synthesizing programs from a specification, with the explicit purpose of finding programs that are not only correct to the specification, but also comprehensible. The ideal natural synthesis procedure could pass something of a Turing test for writing code. A human inspecting the generated code should be able to understand it as easily as human written code.
 
 Take the simple task of synthesizing a list flattening function from examples. 
 Synthesis approaches that use only the primitive recursive operators~\cite{Osera:2015,FeserCD15}, would find a function similar to \codeinline{solution1} in Listing \ref{natSyn}.

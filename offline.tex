@@ -27,7 +27,7 @@ However, since we must test many higher-order functions on each these predicates
 Therefore, it is best to only select as many refinement types as are needed.
 We only use predicates of $\leq,=,\geq$ to specify size constraints on input and output.
 Notice that map will actually satisfy all three of these predicates, which in general, results in an over approximation of appropriate refinement types for higher order functions.
-We discuss potential optimizations for this in Section \ref{eval}.
+We discuss potential optimizations for this in Section \ref{evaluation}.
 
 \begin{lstlisting}[caption=Adding refinement types to higher order functions,label=listing:addRType]
 assignRTypes ::Sig -> IO(Sig, [RType])
