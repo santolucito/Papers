@@ -77,11 +77,11 @@ The \codeinline{any (id)} solution would expected by Haskell programmer, where \
 The more novel solution returned by our natural synthesis is \codeinline{foldr1 (max)}, where \codeinline{max :: Ord a => a -> a -> a} will return the maximum element of the two inputs.
 By folding over the list, this solution program exploits the \codeinline{Enum} property of the Boolean type in Haskell in a way that provides insight into some core Haskell functions and types.
 
-In summary, our paper presents the following contributions:
+In summary, we present the following contributions:
 
 \begin{enumerate}[topsep=0pt]
 \item A programming by example system for a real language (Haskell) that uses natural synthesis to generate simple, reusable code.
-\item Even-handed support for user-defined data types, first-order functions, and higher-order functions, as well as third-party libraries.
+\item Uniform handling of user-defined data types, first-order functions, and higher-order functions, as well as third-party libraries.
 \item A procedure to automatically find suitable refinement types for user-defined higher order functions to prune the search space for our synthesis procedure. Multiple passes of the type-match-ranking algorithm sort, shrink, and -- when needed -- expand the search space.
-\item An evaluation of the performance of \ourTool/, as well as  examples of the code that it can synthesize.
+\item An evaluation of the performance of \ourTool/, as well as  examples of the code that it can synthesize. The benchmarks presented show our tool can generate a wide variety of code that mixes functions from multiple sources.
 \end{enumerate}
