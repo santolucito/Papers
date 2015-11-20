@@ -48,8 +48,8 @@ In fact, many users write higher order functions first, then combine them in int
 Library authors often provide users with a number of higher order functions to allow users more easily write their applications.
 Since users write higher order functions with a deep understanding of the domain, using them produces code that is more idiomatic and easier to understand then using generic higher order functions.
 
-In order to facilitate synthesis over generic higher order function, we split synthesis into two stages. 
-The first offline preprocessing stage will infer rules about how the user's higher order functions behave over their input and output types.
+In order to facilitate synthesis over generic higher order function, we run the synthesis algorithm in two stages. 
+The first offline preprocessing stage infers rules about how the user's higher order functions behave over their input and output types.
 These rules can then be applied in the online synthesis stage, along with various type matching, ranking, and unification algorithms to efficiently prune and navigate the search space of solution programs.
 We will show in our evaluation the small number of examples needed to synthesize clear and concise solution programs.
 
