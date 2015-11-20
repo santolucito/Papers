@@ -46,7 +46,7 @@ Haskell's module system and large repository of libraries like Hackage and Stack
 Often, a user is importing a library that is large, unfamiliar, and/or poorly documented.
 Using \ourTool/, the user no longer needs an intimate knowledge of the library to makes use of the functions and datatypes, and can instead synthesize functions from examples.
 
-As an example, we show code to transpose a music value from the Euterpea DSL for music\cite{Euterpea}.
+As an example, we show code to transpose a music value from the Euterpea DSL for music\cite{euterpea}.
 Among other things, Euterpea defines a tree-like datatype called \codeinline{Music} and various functions for manipulating these types.
 The user only needs to express the basic datatype as examples, and \ourTool/ can synthesize the \codeinline{solution} program.
 The solution utilizes the functions from Euterpea; \codeinline{mMap} for mapping over music values, and \codeinline{(trans::Int->Music Pitch->Music Pitch)} to transpose a Music Pitch by a value.
