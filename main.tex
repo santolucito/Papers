@@ -81,8 +81,8 @@
 %
 
 \authorinfo{Person 1 \and Person 2}
-{\makebox{A Department} \\
-\makebox{A University}  \\
+{\makebox{Department of Computer Science} \\
+\makebox{Yale University}  \\
 \makebox{A Place, AS 12345}}
 {\{person1,person2\}@cs.auniv.edu}
 
@@ -91,12 +91,12 @@
 \maketitle
 
 \begin{abstract}
-We present a new programming by example technique that efficiently synthesizes fitting functions that mix user-defined higher order functions with standard and third-party library code.
+We present a new programming-by-example technique that efficiently synthesizes natural, readable fitting functions that combine user-defined higher-order functions with standard and third-party library code.
 
-We present programming by example that can utilize user defined higher order functions through a dismantling procedure. We use refinement types to prune the search space of higher order functions. Since our refinement types can be under approximating, we can extend liquid Haskell to support arbitrary syntax extensions and maintain soundness. For component/first order functions, we use type directed synthesis. We might use results from paramatricity to synth first order fxns, but probably not.
+The search works by \textit{dismantling} higher-order functions in order to deduce suitable refinement types. These refinement types are then used to prune the search space of possible higher-order functions for a given example set. Since refinement type under-approximate, we can apply Liquid Haskell to arbitrary syntax extensions while still preserving soundness.
+
+We evaluate an implementation of our tool against a large set of synthesis examples including lists, trees, maps, and specialized musical score data structures 
 \end{abstract}
-
-
 
 \input{intro}
 
