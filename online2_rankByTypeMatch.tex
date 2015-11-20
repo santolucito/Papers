@@ -1,8 +1,10 @@
 \subsection{Type match ranking}\label{typeMatch}
 
-Once both the examples and higher order functions have refinement types, we can prune this set over equality.
-The example types also must be concrete versions of the input/output types of the higher order function.
+Once \ourTool/ has both the base and refinement types for the examples and higher order functions, it can can prune and order this set (line 17 of Listing \ref{listing:Algo}).
+The first step is to simply filter the higher order function candidates over equality of refinement types.
+Additionally, \ourTool/ will check the example types are concrete versions of the input/output types of the higher order function with the infix (for clarity) \codeinline{isConcreteTypeOf} function.
 For type A to be a concrete version of type B, there must exist some type C (possibly equal to type B), such that both A and B can be instantiated to that type.
+The above requirement is then that there is some way to unify these two types - a familiar problem\cite{typeUnif}.
 
 \begin{lstlisting}[caption=Pruning based on types]
 filter (exRType ==) higherOrderRTypes

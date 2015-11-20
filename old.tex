@@ -130,6 +130,8 @@ fooMap f = \case
   l -> map f l
  \end{lstlisting}
 
+In order to do this, we need to know the concrete type signature of higher order function when applied to the examples.
+
 We generate and applying many examples with QuickCheck for each higher order function.
 We then apply a similar refinement type inference strategy as above to these examples.
 This lets us support a larger subset of the language, and, in theory refinement type inference for other languages too!
@@ -166,3 +168,5 @@ specializeOn concTy hoTy =
                 (lastAsFunType hoTy)
                 Map.empty
 \end{lstlisting}
+
+For each higher-order function, we supply it with arguments until it is compatible with the type signature implied by the example set. In accordance with our problem definition in Section \ref{problem}, we can assume the final argument of the function is the input. Any other initial value types are satisfied by selecting from a pool of default values, and function types are satisfied by searching for first-order functions that would make the resulting signatures match. If it is not possible to find values that fit, the search moves on to the next higher-order function.
