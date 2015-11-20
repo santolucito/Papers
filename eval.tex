@@ -22,7 +22,7 @@ Even if both type have a measure (lists and trees), in general we have no guaran
 Since \lhask/ is the largest cost to our system, removing refinement type inference in these ambiguous cases provides a large performance gain.
 As an example of the performance gain, in processing the Haskell standard library, base:Prelude, there are 7 out of 30 cases of higher order functions that do not need to be checked against refinement types using this approach.
 
-\subsection{Language Support}\label{languageSupport}
+\subsection{Example Generation}\label{languageSupport}
 
 We have tried to avoid code analysis at every stage of this paper. However there are two points where this has fallen short. First, we must parse a file to extract the name and type information of every top level identifier. Second, using \lhask/ as a blackbox means that we are limited by \lhask/'s ability to deduce refinement types over functions. Our eventual goal is to create a system that can be easily ported across functional languages. Luckily, the first code dependency is small enough to handle with ease in most typed languages (the grammar of a type signature is relatively small). However \lhask/ is a powerful tool that would be difficult to recreate in another language. 
 
@@ -40,3 +40,7 @@ We generate and applying many examples with QuickCheck for each higher order fun
 We then apply a similar refinement type inference strategy as in Listing \ref{exRTypeGen} to these examples.
 
 There are however repercussions to this approach. We are not guaranteed to generate a correct refinement type because we might not generate a fully representative examples. So we might prune away high order functions that are actually useful. This is future work.
+
+Another thing we can do with example generation, is make the program search for new version of code that the user has already written.
+In the background, generate examples, run synthesis and see if something nicer comes up.
+
