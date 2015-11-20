@@ -3,17 +3,16 @@
 
 \subsection{Synthesis with the standard library}
 
-As an introduction to \ourTool/, imagine that a user wants to synthesis the simple \codeinline{stutter} \cite{Osera:2015} function which duplicates each element of a list.
-While in MYTH~\cite{Osera:2015} the focus was on lists as inductively defined data types, we are focusing on using the built in representation of a list in Haskell.
-Haskell provides two relevant functions for this task in the standard library; \codeinline{concatMap :: (a -> [b]) -> [a] -> [b]} which applies a function over a list and concatenates the result, and \codeinline{replicate n :: Int -> a -> [a]} which will replicate an item n times into a list.
-When working over the inductively defined list data type, MYTH requires three examples to find an appropriate function. Using \ourTool/, the user only needs to provides a single example to synthesize the program \codeinline{concatMap (replicate 2)} that fits that example on Haskell's builtin list type.
+As an introduction to \ourTool/, imagine that a user wants to synthesis the simple \codeinline{stutter} \cite{Osera:2015} function which duplicates each element of a list. While in MYTH~\cite{Osera:2015} the focus was on lists as inductively defined data types, we are focusing on using the built in representation of a list in Haskell.
+
+Haskell provides two relevant functions for this task in the standard library; \codeinline{concatMap :: (a -> [b]) -> [a] -> [b]} which applies a function over a list and concatenates the result, and \codeinline{replicate n :: Int -> a -> [a]} which will replicate an item n times into a list. When working over the inductively defined list data type, MYTH requires three examples to find an appropriate function. Using \ourTool/, the user only needs to provides a single example to synthesize the program \codeinline{concatMap (replicate 2)} that fits that example on Haskell's builtin list type.
 
 \begin{lstlisting}
 exs :: [[Int] :-> [Int]]
 exs = [[1, 2, 3] :-> [1, 1, 2, 2, 3, 3]]
 \end{lstlisting}
 
-If, in addition, the user develops a function \codeinline{dupl} which duplicates an element (see below), then \ourTool/ will provide the solution \codeinline{concatMap dupl}, as well as the solution listed above. \ourTool/ will report the solution program that contains user defined functions before finding others, by using a ranking algorithm. Ranks are calculated throughout algorithm, continually being updated as we derive new information.
+If, in addition, the user develops a function \codeinline{dupl} which duplicates an element (see below), then \ourTool/ will provide the solution \codeinline{concatMap dupl}, as well as the solution listed above. \ourTool/ will rank solution programs that contains user defined functions above others. Ranks are calculated throughout algorithm, continually being updated as we derive new information.
 
 \begin{lstlisting}
 dupl :: a -> [a]
@@ -49,7 +48,7 @@ exs = [Branch Nil True Nil :->
 \end{lstlisting}
 
 It may seem that if a user can write a higher order functions over custom data structures, they would not have a need to synthesize such functions.
-However, imagine the incredibly common case of a user importing libraries.
+However, imagine the case of a user importing libraries.
 Haskell's module system and large repository of libraries like Hackage and Stackage are an indispensable part of the language\cite{hackage,stackage}.
 Often, a user is importing a library that is large, unfamiliar, and/or poorly documented.
 Using \ourTool/, the user no longer needs an intimate knowledge of the library to makes use of the functions and datatypes, and can instead synthesize functions from examples.
