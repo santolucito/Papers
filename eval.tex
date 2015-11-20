@@ -16,49 +16,48 @@ In Section \ref{sec:related}, we will discuss why, even if we had completeness, 
 
 \subsection{Performance}
 
-\begin{table}[]
-\centering
-\caption{Performance Measures}
-\label{my-label}
-\begin{tabular}{lllll}
- &  &  &  &  \\
- & any (odd)        & 4.07   &  &  \\
- \hline
+\begin{table*}[t]
+  \centering
+  \begin{tabular}{|lllll|}
+     & any (odd)        & 4.07   &  &  \\
+    \hline
 
- & all (even)       & 1.93   &  &  \\
- \hline
-
- & takeWhile (odd)  & 8.96   &  &  \\
- \hline
-
- & map (not)        & 7.06   &  &  \\
- \hline
-
-or  & any (id)      & 3.72   &  &  \\
-    & foldl1 (max)  & 4.37   &  &  \\
-    & foldr1 (max)  & 4.45   &  &  \\
- \hline
-
-and & all (id)      & 2.36   &  &  \\
-    & foldl1 (min)  & 4.53   &  &  \\
-    & foldr1 (min)  & 4.57   &  &  \\
- \hline
-
-and & foldl  (add) (0)   & 1.68   &  &  \\
-    & foldl' (add) (0)   & 7.56   &  &  \\
-    & foldr  (add) (0)   & 13.95  &  &  \\
-    & foldr' (add) (0)   & 19.94  &  &  \\
-\hline
-
-    & mapBTree (id)      & 2.18   &  &  \\
-\hline
+     & all (even)       & 1.93   &  &  \\
+     \hline
+    
+     & takeWhile (odd)  & 8.96   &  &  \\
+     \hline
+    
+     & map (not)        & 7.06   &  &  \\
+     \hline
+    
+    or  & any (id)      & 3.72   &  &  \\
+        & foldl1 (max)  & 4.37   &  &  \\
+        & foldr1 (max)  & 4.45   &  &  \\
+     \hline
+    
+    and & all (id)      & 2.36   &  &  \\
+        & foldl1 (min)  & 4.53   &  &  \\
+        & foldr1 (min)  & 4.57   &  &  \\
+     \hline
+    
+    and & foldl  (add) (0)   & 1.68   &  &  \\
+        & foldl' (add) (0)   & 7.56   &  &  \\
+        & foldr  (add) (0)   & 13.95  &  &  \\
+        & foldr' (add) (0)   & 19.94  &  &  \\
+    \hline
+    
+        & mapBTree (id)      & 2.18   &  &  \\
+    \hline
 
     & foldl (count) (0)  & 1.67   &  &  \\
     \hline
 
     &  concatMap (replicate (2))  & 1.82   &  &  \\
-\end{tabular}
-\end{table}
+  \end{tabular}
+  \caption{Benchmarks and Performance Measures}
+  \label{tab:benchmarks}
+\end{table*}
 
 Since the standard library can be considered a relatively stable set of code, we could cache the refinement type inference to reduce the build time.
 
